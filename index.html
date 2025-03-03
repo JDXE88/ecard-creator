@@ -1,97 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Your E-Card</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="manifest.json">
+    <title>E-Card Creator</title>
     <meta name="theme-color" content="#4a6741">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="manifest" href="./manifest.json">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap">
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
     <div class="container">
         <h1>Create Your E-Card</h1>
-
         <div class="form-section">
             <h2>1. Create your envelope</h2>
             <div class="form-group">
                 <label for="addressInput">Recipient Address:</label>
-                <textarea id="addressInput" placeholder="Enter the recipient's address here"
-                    oninput="updatePreview()"></textarea>
+                <textarea id="addressInput" placeholder="Enter the recipient's address here" oninput="updatePreview()"></textarea>
             </div>
-
             <div class="form-group">
                 <label for="stampImage">Upload Stamp Image (optional):</label>
                 <input type="file" id="stampImage" accept="image/*" onchange="previewStamp(event)">
             </div>
         </div>
-
         <div class="form-section">
             <h2>2. Create your E-Card</h2>
             <div class="form-group">
                 <label for="cardImage">Upload Card Image:</label>
                 <input type="file" id="cardImage" accept="image/*" onchange="previewCardImage(event)">
             </div>
-
             <div class="form-group">
                 <label for="greetingMessage">Greeting Message:</label>
-                <textarea id="greetingMessage" placeholder="Enter your greeting message here"
-                    oninput="updatePreview()"></textarea>
+                <textarea id="greetingMessage" placeholder="Enter your greeting message here" oninput="updatePreview()"></textarea>
             </div>
-
             <div class="form-group">
                 <label for="fromMessage">From:</label>
-                <input type="text" id="fromMessage" placeholder="Your name or a personal message"
-                    oninput="updatePreview()">
+                <input type="text" id="fromMessage" placeholder="Your name or a personal message" oninput="updatePreview()">
             </div>
         </div>
-
         <div class="form-section">
             <h2>Preview</h2>
             <div class="preview-section">
                 <div class="envelope-preview">
-                    <div class="stamp-preview" id="stampPreviewContainer">
-                        <span>Stamp</span>
-                    </div>
+                    <div class="stamp-preview" id="stampPreviewContainer"><span>Stamp</span></div>
                     <div class="preview-address" id="addressPreview">Address will appear here</div>
                 </div>
-
                 <div class="ecard-preview">
-                    <div class="image-preview" id="imagePreviewContainer">
-                        <span>Your image will appear here</span>
-                    </div>
+                    <div class="image-preview" id="imagePreviewContainer"><span>Your image will appear here</span></div>
                     <div class="message-preview" id="messagePreview">Your greeting message will appear here</div>
                     <div class="from-preview" id="fromPreview">- From</div>
                 </div>
             </div>
         </div>
-
         <div class="buttons">
-            <button onclick="generateCode()">Generate E-Card Code</button>
-        </div>
-
-        <div id="finalOutput">
-            <h2>Your E-Card Code</h2>
-            <p>Copy the code below and save it as an HTML file to use your e-card:</p>
-            <div class="code-box" id="codeOutput"></div>
-            <button class="copy-button" onclick="copyCode()">Copy Code</button>
+            <button onclick="generateDownloadableCard()">Download E-Card</button>
         </div>
     </div>
-
     <script src="script.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker registered'))
-                    .catch(err => console.log('Service Worker registration failed', err));
+                navigator.serviceWorker.register('./sw.js');
             });
         }
     </script>
 </body>
-
 </html>

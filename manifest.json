@@ -1,22 +1,22 @@
 {
-  "name": "E-Card Creator",
+  "name": "E-Card Greeting",
   "short_name": "E-Card",
-  "description": "Create and download interactive e-cards",
-  "start_url": "./index.html",
+  "description": "Create and share beautiful digital greeting cards",
+  "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#f9f9f9",
-  "theme_color": "#4a6741",
+  "background_color": "#f8f9fa",
+  "theme_color": "#3498db",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "images/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
     },
     {
-      "src": "icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "images/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ]
 }

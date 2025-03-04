@@ -1,184 +1,549 @@
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
+/* General Styles */
+* {
     margin: 0;
-    padding: 20px;
-    background-color: #f9f9f9;
-    color: #333
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
 }
 
 .container {
-    max-width: 1000px;
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    position: relative;
+}
+
+.card-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 600px;
     margin: 0 auto;
-    background-color: #fff;
-    padding: 30px;
+    perspective: 1500px;
+}
+
+/* Envelope Styles */
+.envelope-front, .envelope-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #f5f5f5;
     border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, .1)
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    backface-visibility: hidden;
+    transition: transform 1s ease-in-out;
+    display: none;
 }
 
-h1 {
+.envelope-front.active, .envelope-back.active {
+    display: block;
+}
+
+.envelope-front {
+    background-color: #e74c3c;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.envelope-front.flip {
+    transform: rotateY(180deg);
+}
+
+.envelope-back {
+    transform: rotateY(180deg);
+    background-color: #c0392b;
+}
+
+.envelope-back.flip {
+    transform: rotateY(0);
+}
+
+.envelope-design {
+    width: 80%;
+    height: 70%;
+    background-color: #e74c3c;
+    border: 2px dashed #ffffff;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: white;
+}
+
+.stamp {
+    position: absolute;
+    top: 50px;
+    right: 80px;
+    width: 60px;
+    height: 70px;
+    background-color: #f8f9fa;
+    border: 1px dashed #34495e;
+    border-radius: 4px;
+}
+
+.address-lines {
     text-align: center;
-    color: #4a6741;
-    margin-bottom: 30px
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
 }
 
-.form-section {
-    margin-bottom: 30px
+.envelope-btn {
+    margin-top: 30px;
+    padding: 12px 24px;
+    background-color: #f8f9fa;
+    color: #e74c3c;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.form-section h2 {
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 10px;
-    color: #4a6741
+.envelope-btn:hover {
+    background-color: #ffffff;
+    transform: scale(1.05);
+}
+
+.envelope-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background-color: #c0392b;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top;
+    transition: transform 1s ease;
+}
+
+.envelope-flap.open {
+    transform: rotateX(180deg);
+}
+
+.envelope-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.letter {
+    width: 90%;
+    height: 90%;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.5s ease;
+    transform: translateY(0);
+}
+
+.letter.pull-out {
+    transform: translateY(-50px);
+}
+
+.open-card-btn {
+    padding: 12px 24px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.open-card-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Card Pages Styles */
+.card-pages {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    transition: transform 0.5s ease;
+}
+
+.card-pages.active {
+    display: block;
+}
+
+.card-page {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.card-page.active {
+    display: flex;
+}
+
+.card-page h1 {
+    font-size: 32px;
+    color: #3498db;
+    margin-bottom: 30px;
+}
+
+.card-page h2 {
+    font-size: 28px;
+    color: #3498db;
+    margin-bottom: 20px;
+}
+
+.card-text {
+    font-size: 20px;
+    color: #34495e;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.signature {
+    font-family: 'Brush Script MT', cursive;
+    font-size: 24px;
+    color: #34495e;
+    margin-top: 40px;
+    align-self: flex-end;
+}
+
+.next-btn, .prev-btn, .restart-btn, .customize-btn {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    margin: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.next-btn:hover, .prev-btn:hover, .restart-btn:hover, .customize-btn:hover {
+    background-color: #2980b9;
+}
+
+.heart-animation {
+    width: 100px;
+    height: 100px;
+    background-color: #e74c3c;
+    position: relative;
+    margin: 20px auto;
+    transform: rotate(45deg);
+    animation: heartbeat 1.5s infinite;
+}
+
+.heart-animation:before, .heart-animation:after {
+    content: "";
+    width: 100px;
+    height: 100px;
+    background-color: #e74c3c;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.heart-animation:before {
+    top: -50px;
+    left: 0;
+}
+
+.heart-animation:after {
+    top: 0;
+    left: -50px;
+}
+
+@keyframes heartbeat {
+    0% { transform: rotate(45deg) scale(1); }
+    25% { transform: rotate(45deg) scale(1.1); }
+    50% { transform: rotate(45deg) scale(1); }
+    75% { transform: rotate(45deg) scale(1.1); }
+    100% { transform: rotate(45deg) scale(1); }
+}
+
+/* Customization Form Styles */
+.customization-form {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.customization-form.active {
+    display: flex;
+}
+
+.customization-form h2 {
+    font-size: 24px;
+    color: #3498db;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .form-group {
-    margin-bottom: 20px
+    margin-bottom: 20px;
 }
 
-label {
+.form-group label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: 700
+    font-size: 16px;
+    color: #34495e;
+    margin-bottom: 8px;
 }
 
-input[type=text],
-input[type=file],
-textarea {
+.form-group input, .form-group textarea, .form-group select {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px
-}
-
-textarea {
-    height: 120px;
-    resize: vertical
-}
-
-.preview-section {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
-    margin-top: 40px;
-    align-items: flex-start
-}
-
-.envelope-preview {
-    width: 400px;
-    height: 250px;
-    position: relative;
-    background-color: #f5e1b3;
+    border: 1px solid #bdc3c7;
     border-radius: 5px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, .2);
-    border: 3px solid #e0c597;
-    overflow: hidden
+    font-size: 16px;
 }
 
-.preview-address {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    font-family: 'Special Elite', cursive;
-    font-size: 14px;
-    color: #333;
-    line-height: 1.4;
-    max-width: 80%
+.form-group textarea {
+    height: 100px;
+    resize: vertical;
 }
 
-.stamp-preview {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 60px;
-    height: 70px;
-    border: 2px solid #c0a060;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, .3);
-    background-color: #fff;
+.button-group {
     display: flex;
     justify-content: center;
-    align-items: center;
-    overflow: hidden
+    flex-wrap: wrap;
+    margin-top: 20px;
 }
 
-.stamp-preview img {
+.save-btn, .share-btn, .cancel-btn {
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    margin: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.save-btn {
+    background-color: #27ae60;
+}
+
+.share-btn {
+    background-color: #3498db;
+}
+
+.cancel-btn {
+    background-color: #e74c3c;
+}
+
+.save-btn:hover {
+    background-color: #219653;
+}
+
+.share-btn:hover {
+    background-color: #2980b9;
+}
+
+.cancel-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Share Modal Styles */
+.share-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover
-}
-
-.ecard-preview {
-    width: 400px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, .2);
-    padding: 15px
-}
-
-.image-preview {
-    width: 100%;
-    height: 250px;
-    background-color: #eee;
-    display: flex;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100;
     justify-content: center;
     align-items: center;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    overflow: hidden
 }
 
-.image-preview img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain
+.share-modal.active {
+    display: flex;
 }
 
-.message-preview {
-    font-family: 'Special Elite', cursive;
-    padding: 15px;
-    min-height: 120px;
-    text-align: center
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
 }
 
-.from-preview {
-    font-family: 'Special Elite', cursive;
-    text-align: right;
-    padding-right: 20px;
-    font-style: italic
-}
-
-.buttons {
-    text-align: center;
-    margin-top: 30px
-}
-
-button {
-    background-color: #4a6741;
-    color: #fff;
-    border: none;
-    padding: 12px 24px;
-    font-size: 16px;
-    border-radius: 4px;
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
     cursor: pointer;
-    transition: background-color .3s
+    color: #34495e;
 }
 
-button:hover {
-    background-color: #3a5331
+.share-link-container {
+    display: flex;
+    margin: 20px 0;
 }
 
-@media (max-width:900px) {
-    .preview-section {
-        flex-direction: column;
-        align-items: center
+#share-link {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px 0 0 5px;
+    font-size: 16px;
+}
+
+#copy-link {
+    padding: 10px 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+.social-share {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.social-btn {
+    padding: 10px 15px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.whatsapp {
+    background-color: #25D366;
+}
+
+.email {
+    background-color: #D44638;
+}
+
+.facebook {
+    background-color: #3b5998;
+}
+
+.twitter {
+    background-color: #1DA1F2;
+}
+
+/* Theme Styles */
+.card-page.theme-birthday {
+    background-color: #fef9e7;
+    color: #8e44ad;
+}
+
+.card-page.theme-holiday {
+    background-color: #f1f5f8;
+    color: #c0392b;
+}
+
+.card-page.theme-thank-you {
+    background-color: #e8f8f5;
+    color: #16a085;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .card-container {
+        height: 500px;
     }
+    
+    .card-page h1 {
+        font-size: 28px;
+    }
+    
+    .card-page h2 {
+        font-size: 24px;
+    }
+    
+    .card-text {
+        font-size: 18px;
+    }
+    
+    .signature {
+        font-size: 22px;
+    }
+}
 
-    .envelope-preview,
-    .ecard-preview {
+@media (max-width: 480px) {
+    .card-container {
+        height: 450px;
+    }
+    
+    .card-page {
+        padding: 20px;
+    }
+    
+    .card-page h1 {
+        font-size: 24px;
+    }
+    
+    .card-page h2 {
+        font-size: 20px;
+    }
+    
+    .card-text {
+        font-size: 16px;
+    }
+    
+    .signature {
+        font-size: 20px;
+    }
+    
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .save-btn, .share-btn, .cancel-btn {
         width: 100%;
-        max-width: 400px
+        margin: 5px 0;
     }
 }

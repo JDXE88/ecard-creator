@@ -1,2 +1,0 @@
-# ecard-creator
-ecard-creator

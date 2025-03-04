@@ -1,1 +1,98 @@
-const CACHE_NAME = 'ecard-creator-v1', urlsToCache = ['./', '/index.html', '/style.css', '/script.js', '/manifest.json', '/stamp.png', '/icons/icon-192x192.png', '/icons/icon-512x512.png', 'https://fonts.googleapis.com/css2?family=Special+Elite&display=swap']; self.addEventListener('install', a => { a.waitUntil(caches.open(CACHE_NAME).then(a => a.addAll(urlsToCache))) }), self.addEventListener('fetch', a => { a.respondWith(caches.match(a.request).then(b => b || fetch(a.request))) }), self.addEventListener('activate', a => { a.waitUntil(caches.keys().then(a => Promise.all(a.filter(a => a !== CACHE_NAME).map(a => caches.delete(a))))) });
+const CACHE_NAME = 'ecard-cache-v1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/styles.css',
+  '/app.js',
+  '/manifest.json',
+  '/images/icon-192x192.png',
+  '/images/icon-512x512.png'
+];
+
+// Install service worker and cache assets
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
+  );
+});
+
+// Activate service worker and clean up old caches
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+// Fetch resources from cache or network
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request).then(
+            response => {
+              // Check if we received a valid response
+              if (!response || response.status !== 200 || response.type !== 'basic') {
+                return response;
+              }
+  
+              // Clone the response
+              const responseToCache = response.clone();
+  
+              // Cache the fetched resource
+              caches.open(CACHE_NAME)
+                .then(cache => {
+                  cache.put(event.request, responseToCache);
+                });
+  
+              return response;
+            }
+          );
+        })
+    );
+  });
+  
+  // Handle offline functionality
+  self.addEventListener('fetch', event => {
+    // Skip cross-origin requests
+    if (event.request.url.startsWith(self.location.origin)) {
+      event.respondWith(
+        caches.match(event.request).then(cachedResponse => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          
+          return fetch(event.request).then(response => {
+            // If this is a valid response, clone and cache it
+            if (response && response.status === 200 && response.type === 'basic') {
+              const responseToCache = response.clone();
+              caches.open(CACHE_NAME).then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+            }
+            return response;
+          }).catch(() => {
+            // If offline and resource isn't cached, show fallback content for HTML pages
+            if (event.request.headers.get('accept').includes('text/html')) {
+              return caches.match('index.html');
+            }
+          });
+        })
+      );
+    }
+  });

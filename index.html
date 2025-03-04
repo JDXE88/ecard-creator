@@ -3,109 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Card Greeting</title>
+    <title>Premium E-Card Creator</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#f8f9fa">
     <link rel="icon" href="images/icon-192x192.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <div class="card-container">
-            <!-- Envelope Front -->
-            <div class="envelope-front active">
-                <div class="envelope-design">
-                    <div class="stamp"></div>
-                    <div class="address-lines">
-                        <span>To: Someone Special</span>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <h1>Premium E-Cards</h1>
+            </div>
+            <nav class="main-nav">
+                <button id="gallery-btn" class="nav-btn active">Gallery</button>
+                <button id="customize-btn" class="nav-btn">Customize</button>
+                <button id="preview-btn" class="nav-btn">Preview</button>
+                <button id="share-btn" class="nav-btn">Share</button>
+            </nav>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Card Gallery Selection -->
+            <section id="gallery-section" class="section active">
+                <h2>Choose Your Card Design</h2>
+                <div class="card-categories">
+                    <button class="category-btn active" data-category="all">All Cards</button>
+                    <button class="category-btn" data-category="birthday">Birthday</button>
+                    <button class="category-btn" data-category="thank-you">Thank You</button>
+                    <button class="category-btn" data-category="anniversary">Anniversary</button>
+                    <button class="category-btn" data-category="holiday">Holiday</button>
+                </div>
+                <div class="cards-grid">
+                    <div class="card-template" data-id="1" data-category="birthday">
+                        <div class="card-preview">
+                            <img src="images/cards/birthday1.jpg" alt="Birthday Card 1">
+                        </div>
+                        <h3>Happy Birthday Balloons</h3>
+                        <button class="select-card-btn">Select</button>
+                    </div>
+                    <div class="card-template" data-id="2" data-category="birthday">
+                        <div class="card-preview">
+                            <img src="images/cards/birthday2.jpg" alt="Birthday Card 2">
+                        </div>
+                        <h3>Birthday Cake Deluxe</h3>
+                        <button class="select-card-btn">Select</button>
+                    </div>
+                    <div class="card-template" data-id="3" data-category="thank-you">
+                        <div class="card-preview">
+                            <img src="images/cards/thankyou1.jpg" alt="Thank You Card 1">
+                        </div>
+                        <h3>Thank You Floral</h3>
+                        <button class="select-card-btn">Select</button>
+                    </div>
+                    <div class="card-template" data-id="4" data-category="anniversary">
+                        <div class="card-preview">
+                            <img src="images/cards/anniversary1.jpg" alt="Anniversary Card 1">
+                        </div>
+                        <h3>Anniversary Hearts</h3>
+                        <button class="select-card-btn">Select</button>
+                    </div>
+                    <div class="card-template" data-id="5" data-category="holiday">
+                        <div class="card-preview">
+                            <img src="images/cards/holiday1.jpg" alt="Holiday Card 1">
+                        </div>
+                        <h3>Festive Greetings</h3>
+                        <button class="select-card-btn">Select</button>
+                    </div>
+                    <div class="card-template" data-id="6" data-category="holiday">
+                        <div class="card-preview">
+                            <img src="images/cards/holiday2.jpg" alt="Holiday Card 2">
+                        </div>
+                        <h3>Winter Wonderland</h3>
+                        <button class="select-card-btn">Select</button>
                     </div>
                 </div>
-                <button class="envelope-btn">Open Envelope</button>
-            </div>
+            </section>
 
-            <!-- Envelope Back (flipped) -->
-            <div class="envelope-back">
-                <div class="envelope-flap"></div>
-                <div class="envelope-content">
-                    <div class="letter">
-                        <button class="open-card-btn">Open Card</button>
+            <!-- Customization Section -->
+            <section id="customize-section" class="section">
+                <h2>Personalize Your Card</h2>
+                <div class="customization-container">
+                    <div class="card-preview-panel">
+                        <div class="card-preview-container">
+                            <div class="card-preview-pages">
+                                <div class="preview-page front-cover active">
+                                    <div id="front-cover-preview"></div>
+                                </div>
+                                <div class="preview-page inside-left">
+                                    <div id="inside-left-preview"></div>
+                                </div>
+                                <div class="preview-page inside-right">
+                                    <div id="inside-right-preview"></div>
+                                </div>
+                                <div class="preview-page back-cover">
+                                    <div id="back-cover-preview"></div>
+                                </div>
+                            </div>
+                            <div class="preview-controls">
+                                <button id="prev-page" class="preview-control-btn"><i class="fas fa-chevron-left"></i></button>
+                                <div class="page-indicator">
+                                    <span id="current-page">1</span>/<span id="total-pages">4</span>
+                                </div>
+                                <button id="next-page" class="preview-control-btn"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="customization-options">
+                        <div class="customization-panel">
+                            <h3>Card Content</h3>
+                            <div class="form-group">
+                                <label for="recipient-name">To:</label>
+                                <input type="text" id="recipient-name" placeholder="Recipient's Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="card-message">Your Message:</label>
+                                <textarea id="card-message" placeholder="Write your personal message here..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="sender-name">From:</label>
+                                <input type="text" id="sender-name" placeholder="Your Name">
+                            </div>
+                            <h3>Card Style</h3>
+                            <div class="form-group">
+                                <label for="font-family">Font Style:</label>
+                                <select id="font-family">
+                                    <option value="Arial, sans-serif">Modern</option>
+                                    <option value="'Times New Roman', serif">Classic</option>
+                                    <option value="'Brush Script MT', cursive">Handwritten</option>
+                                    <option value="'Comic Sans MS', cursive">Fun</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="text-color">Text Color:</label>
+                                <input type="color" id="text-color" value="#000000">
+                            </div>
+                            <button id="apply-customization" class="primary-btn">Apply Changes</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Card Pages -->
-            <div class="card-pages">
-                <div class="card-page page-1 active">
-                    <h1>Happy Greetings!</h1>
-                    <p class="card-text">I wanted to send you something special...</p>
-                    <button class="next-btn">Next</button>
+            <!-- Preview Section - Realistic Card & Envelope -->
+            <section id="preview-section" class="section">
+                <h2>Preview Your Card</h2>
+                <div class="card-experience-container">
+                    <div class="envelope-container">
+                        <div class="envelope">
+                            <div class="envelope-front">
+                                <div class="envelope-design">
+                                  <div class="stamp">
+                                    <img src="images/stamp.png" alt="Stamp">
+                                  </div>
+                                  <div class="address-lines">
+                                    <span id="envelope-recipient">To: Someone Special</span>
+                                  </div>
+                                  <div class="postmark"></div>
+                                </div>
+                              </div>
+                            <div class="envelope-flap"></div>
+                            <div class="envelope-back"></div>
+                            <div class="card-content">
+                                <div class="card-book">
+                                    <div class="card-page cover">
+                                        <div id="card-cover-content"></div>
+                                    </div>
+                                    <div class="card-page inside-left">
+                                        <div id="card-inside-left"></div>
+                                    </div>
+                                    <div class="card-page inside-right">
+                                        <div class="message-container">
+                                            <p class="message-to">Dear <span id="message-recipient">Someone Special</span>,</p>
+                                            <p id="message-content" class="message-content">Your personalized message will appear here.</p>
+                                            <p class="message-from">With love,<br><span id="message-sender">Your Name</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="card-page back-cover">
+                                        <div id="card-back-content">
+                                            <div class="logo-small">Premium E-Cards</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview-instructions">
+                            <p>Click the envelope to open it</p>
+                        </div>
+                    </div>
+                    <div class="preview-controls">
+                        <button id="reset-preview" class="secondary-btn">Reset Preview</button>
+                        <button id="go-to-share" class="primary-btn">Continue to Share</button>
+                    </div>
                 </div>
-                <div class="card-page page-2">
-                    <p class="card-text">I appreciate you more than words can say...</p>
-                    <div class="heart-animation"></div>
-                    <button class="next-btn">Next</button>
-                    <button class="prev-btn">Previous</button>
-                </div>
-                <div class="card-page page-3">
-                    <h2>Wishing you the very best!</h2>
-                    <p class="card-text">May your day be filled with joy and happiness.</p>
-                    <p class="signature">With love,<br>Me</p>
-                    <button class="customize-btn">Customize this Card</button>
-                    <button class="prev-btn">Previous</button>
-                    <button class="restart-btn">Start Over</button>
-                </div>
-            </div>
+            </section>
 
-            <!-- Customization Form -->
-            <div class="customization-form">
-                <h2>Customize Your Card</h2>
-                <div class="form-group">
-                    <label for="recipient">Recipient Name:</label>
-                    <input type="text" id="recipient" placeholder="Someone Special">
+            <!-- Share Section -->
+            <section id="share-section" class="section">
+                <h2>Share Your Card</h2>
+                <div class="share-container">
+                    <div class="share-preview">
+                        <div class="share-card-thumbnail" id="share-thumbnail"></div>
+                        <div class="share-card-info">
+                            <h3>Your E-Card is Ready!</h3>
+                            <p>Send this special greeting to <span id="share-recipient">Someone Special</span></p>
+                        </div>
+                    </div>
+                    <div class="share-options">
+                        <div class="share-link-container">
+                            <p>Share via link:</p>
+                            <div class="share-link-input">
+                                <input type="text" id="share-link" readonly>
+                                <button id="copy-link" class="copy-btn"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="share-social">
+                            <p>Share via social media:</p>
+                            <div class="social-buttons">
+                                <button class="social-btn email"><i class="fas fa-envelope"></i> Email</button>
+                                <button class="social-btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                                <button class="social-btn facebook"><i class="fab fa-facebook-f"></i> Facebook</button>
+                                <button class="social-btn twitter"><i class="fab fa-twitter"></i> Twitter</button>
+                            </div>
+                        </div>
+                        <div class="or-divider">
+                            <span>OR</span>
+                        </div>
+                        <div class="create-new">
+                            <button id="create-new-card" class="primary-btn">Create a New Card</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="message">Custom Message:</label>
-                    <textarea id="message" placeholder="Enter your personal message here..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="sender">From:</label>
-                    <input type="text" id="sender" placeholder="Your Name">
-                </div>
-                <div class="form-group">
-                    <label>Card Theme:</label>
-                    <select id="theme">
-                        <option value="default">Default</option>
-                        <option value="birthday">Birthday</option>
-                        <option value="holiday">Holiday</option>
-                        <option value="thank-you">Thank You</option>
-                    </select>
-                </div>
-                <div class="button-group">
-                    <button class="save-btn">Save Card</button>
-                    <button class="share-btn">Share Card</button>
-                    <button class="cancel-btn">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
+            </section>
+        </main>
 
-    <!-- Share Modal -->
-    <div class="share-modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Share Your E-Card</h2>
-            <p>Copy the link below to share your custom card:</p>
-            <div class="share-link-container">
-                <input type="text" id="share-link" readonly>
-                <button id="copy-link">Copy</button>
-            </div>
-            <div class="social-share">
-                <button class="social-btn whatsapp">WhatsApp</button>
-                <button class="social-btn email">Email</button>
-                <button class="social-btn facebook">Facebook</button>
-                <button class="social-btn twitter">Twitter</button>
-            </div>
-        </div>
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2025 Premium E-Cards. All rights reserved.</p>
+        </footer>
     </div>
 
     <script src="app.js"></script>

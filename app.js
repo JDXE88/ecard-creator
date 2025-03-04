@@ -1,247 +1,351 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements
-    const envelopeFront = document.querySelector('.envelope-front');
-    const envelopeBack = document.querySelector('.envelope-back');
-    const envelopeFlap = document.querySelector('.envelope-flap');
-    const letter = document.querySelector('.letter');
-    const cardPages = document.querySelector('.card-pages');
-    const customizationForm = document.querySelector('.customization-form');
-    const shareModal = document.querySelector('.share-modal');
+    // DOM Elements - Navigation
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('.section');
     
-    // Buttons
-    const envelopeBtn = document.querySelector('.envelope-btn');
-    const openCardBtn = document.querySelector('.open-card-btn');
-    const nextBtns = document.querySelectorAll('.next-btn');
-    const prevBtns = document.querySelectorAll('.prev-btn');
-    const restartBtn = document.querySelector('.restart-btn');
-    const customizeBtn = document.querySelector('.customize-btn');
-    const saveBtn = document.querySelector('.save-btn');
-    const shareBtns = document.querySelectorAll('.share-btn');
-    const cancelBtn = document.querySelector('.cancel-btn');
-    const closeModal = document.querySelector('.close-modal');
-    const copyLinkBtn = document.getElementById('copy-link');
-    const socialBtns = document.querySelectorAll('.social-btn');
+    // DOM Elements - Gallery
+    const categoryButtons = document.querySelectorAll('.category-btn');
+    const cardTemplates = document.querySelectorAll('.card-template');
+    const selectCardButtons = document.querySelectorAll('.select-card-btn');
     
-    // Card pages
-    const cardPagesArray = Array.from(document.querySelectorAll('.card-page'));
+    // DOM Elements - Customization
+    const prevPageButton = document.getElementById('prev-page');
+    const nextPageButton = document.getElementById('next-page');
+    const currentPageSpan = document.getElementById('current-page');
+    const applyCustomizationButton = document.getElementById('apply-customization');
+    const previewPages = document.querySelectorAll('.preview-page');
     
-    // State
-    let currentPage = 0;
-    let customCardData = {
+    // DOM Elements - Preview
+    const envelope = document.querySelector('.envelope');
+    const previewInstructions = document.querySelector('.preview-instructions');
+    const resetPreviewButton = document.getElementById('reset-preview');
+    const goToShareButton = document.getElementById('go-to-share');
+    
+    // DOM Elements - Share
+    const shareLink = document.getElementById('share-link');
+    const copyLinkButton = document.getElementById('copy-link');
+    const socialButtons = document.querySelectorAll('.social-btn');
+    const createNewCardButton = document.getElementById('create-new-card');
+    
+    // State Management
+    let currentSection = 'gallery-section';
+    let selectedCardId = null;
+    let currentPreviewPage = 0;
+    let cardData = {
+        cardId: null,
         recipient: 'Someone Special',
-        message: 'I wanted to send you something special...',
-        sender: 'Me',
-        theme: 'default'
+        message: 'Your personalized message will appear here.',
+        sender: 'Your Name',
+        fontFamily: 'Arial, sans-serif',
+        textColor: '#000000',
+        category: ''
     };
     
-    // Open envelope animation
-    envelopeBtn.addEventListener('click', () => {
-        envelopeFront.classList.add('flip');
-        envelopeBack.classList.add('active');
-        envelopeBack.classList.add('flip');
+    // Initialize application
+    function init() {
+        loadCardFromUrl();
+        updateCardPreview();
+        setupEventListeners();
+    }
+    
+    // Setup Event Listeners
+    function setupEventListeners() {
+        // Navigation
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetSection = button.id.replace('-btn', '-section');
+                changeSection(targetSection);
+            });
+        });
         
-        setTimeout(() => {
-            envelopeFlap.classList.add('open');
+        // Category filtering
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterCards(button.dataset.category);
+                
+                // Update active category
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+        
+        // Card selection
+        selectCardButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const cardTemplate = e.target.closest('.card-template');
+                selectedCardId = cardTemplate.dataset.id;
+                cardData.cardId = selectedCardId;
+                cardData.category = cardTemplate.dataset.category;
+                
+                // Update preview with selected card
+                updateCardPreview();
+                
+                // Navigate to customize section
+                changeSection('customize-section');
+            });
+        });
+        
+        // Preview page navigation
+        prevPageButton.addEventListener('click', () => {
+            if (currentPreviewPage > 0) {
+                currentPreviewPage--;
+                updatePreviewPageDisplay();
+            }
+        });
+        
+        nextPageButton.addEventListener('click', () => {
+            if (currentPreviewPage < previewPages.length - 1) {
+                currentPreviewPage++;
+                updatePreviewPageDisplay();
+            }
+        });
+        
+        // Apply customization
+        applyCustomizationButton.addEventListener('click', () => {
+            updateCardData();
+            updateCardPreview();
+        });
+        
+        // Envelope interaction
+        envelope.addEventListener('click', () => {
+            if (!envelope.classList.contains('opened')) {
+                envelope.classList.add('opened');
+                previewInstructions.textContent = 'Click the card to open it';
+                
+                // After envelope opens, allow clicking on card
+                setTimeout(() => {
+                    envelope.addEventListener('click', openCard, { once: true });
+                }, 1500);
+            }
+        });
+        
+        // Reset preview
+        resetPreviewButton.addEventListener('click', () => {
+            resetCardPreview();
+        });
+        
+        // Navigate to share
+        goToShareButton.addEventListener('click', () => {
+            changeSection('share-section');
+            generateShareLink();
+            updateShareThumbnail();
+        });
+        
+        // Copy share link
+        copyLinkButton.addEventListener('click', () => {
+            shareLink.select();
+            document.execCommand('copy');
             
+            // Visual feedback
+            copyLinkButton.innerHTML = '<i class="fas fa-check"></i>';
             setTimeout(() => {
-                letter.classList.add('pull-out');
-            }, 500);
-        }, 1000);
-    });
-    
-    // Open card
-    openCardBtn.addEventListener('click', () => {
-        envelopeBack.classList.remove('active');
-        cardPages.classList.add('active');
-    });
-    
-    // Navigation between card pages
-    nextBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (currentPage < cardPagesArray.length - 1) {
-                cardPagesArray[currentPage].classList.remove('active');
-                currentPage++;
-                cardPagesArray[currentPage].classList.add('active');
-            }
-        });
-    });
-    
-    prevBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (currentPage > 0) {
-                cardPagesArray[currentPage].classList.remove('active');
-                currentPage--;
-                cardPagesArray[currentPage].classList.add('active');
-            }
-        });
-    });
-    
-    // Restart button
-    restartBtn.addEventListener('click', () => {
-        resetEverything();
-    });
-    
-    // Customize button
-    customizeBtn.addEventListener('click', () => {
-        cardPages.classList.remove('active');
-        customizationForm.classList.add('active');
-        
-        // Pre-fill form with current values
-        document.getElementById('recipient').value = customCardData.recipient;
-        document.getElementById('message').value = customCardData.message;
-        document.getElementById('sender').value = customCardData.sender;
-        document.getElementById('theme').value = customCardData.theme;
-    });
-    
-    // Save customized card
-    saveBtn.addEventListener('click', () => {
-        customCardData = {
-            recipient: document.getElementById('recipient').value || 'Someone Special',
-            message: document.getElementById('message').value || 'I wanted to send you something special...',
-            sender: document.getElementById('sender').value || 'Me',
-            theme: document.getElementById('theme').value || 'default'
-        };
-        
-        // Update card content
-        document.querySelector('.address-lines span').textContent = `To: ${customCardData.recipient}`;
-        document.querySelector('.page-1 .card-text').textContent = customCardData.message;
-        document.querySelector('.signature').innerHTML = `With love,<br>${customCardData.sender}`;
-        
-        // Apply theme
-        cardPagesArray.forEach(page => {
-            page.className = `card-page ${page.classList[1]}`;
-            if (customCardData.theme !== 'default') {
-                page.classList.add(`theme-${customCardData.theme}`);
-            }
+                copyLinkButton.innerHTML = '<i class="fas fa-copy"></i>';
+            }, 2000);
         });
         
-        customizationForm.classList.remove('active');
-        cardPages.classList.add('active');
-    });
-    
-    // Cancel customization
-    cancelBtn.addEventListener('click', () => {
-        customizationForm.classList.remove('active');
-        cardPages.classList.add('active');
-    });
-    
-    // Share functionality
-    shareBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            openShareModal();
-        });
-    });
-    
-    // Close share modal
-    closeModal.addEventListener('click', () => {
-        shareModal.classList.remove('active');
-    });
-    
-    // Click outside modal to close
-    shareModal.addEventListener('click', (e) => {
-        if (e.target === shareModal) {
-            shareModal.classList.remove('active');
-        }
-    });
-    
-    // Copy share link
-    copyLinkBtn.addEventListener('click', () => {
-        const shareLinkInput = document.getElementById('share-link');
-        shareLinkInput.select();
-        document.execCommand('copy');
-        
-        // Show copied feedback
-        const originalText = copyLinkBtn.textContent;
-        copyLinkBtn.textContent = 'Copied!';
-        setTimeout(() => {
-            copyLinkBtn.textContent = originalText;
-        }, 2000);
-    });
-    
-    // Social sharing buttons
-    socialBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const shareUrl = document.getElementById('share-link').value;
-            const text = `Check out this e-card I made for you!`;
-            let shareLink;
-            
-            if (btn.classList.contains('whatsapp')) {
-                shareLink = `https://wa.me/?text=${encodeURIComponent(text + ' ' + shareUrl)}`;
-            } else if (btn.classList.contains('email')) {
-                shareLink = `mailto:?subject=E-Card for You&body=${encodeURIComponent(text + '\n\n' + shareUrl)}`;
-            } else if (btn.classList.contains('facebook')) {
-                shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-            } else if (btn.classList.contains('twitter')) {
-                shareLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
-            }
-            
-            window.open(shareLink, '_blank');
-        });
-    });
-    
-    // Helper functions
-    function resetEverything() {
-        // Reset envelope
-        envelopeFront.classList.remove('flip');
-        envelopeBack.classList.remove('flip');
-        envelopeBack.classList.remove('active');
-        envelopeFlap.classList.remove('open');
-        letter.classList.remove('pull-out');
-        
-        // Reset card pages
-        cardPages.classList.remove('active');
-        cardPagesArray.forEach(page => page.classList.remove('active'));
-        cardPagesArray[0].classList.add('active');
-        currentPage = 0;
-        
-        // Reset custom form
-        customizationForm.classList.remove('active');
-        
-        // Show envelope front
-        envelopeFront.classList.add('active');
-    }
-    
-    function openShareModal() {
-        // Generate a share link with encoded parameters
-        const baseUrl = window.location.href.split('?')[0];
-        const params = new URLSearchParams();
-        params.set('recipient', customCardData.recipient);
-        params.set('message', customCardData.message);
-        params.set('sender', customCardData.sender);
-        params.set('theme', customCardData.theme);
-        
-        const shareUrl = `${baseUrl}?${params.toString()}`;
-        document.getElementById('share-link').value = shareUrl;
-        
-        shareModal.classList.add('active');
-    }
-    
-    // Check URL for shared card parameters
-    function loadSharedCard() {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('recipient')) {
-            customCardData = {
-                recipient: urlParams.get('recipient'),
-                message: urlParams.get('message'),
-                sender: urlParams.get('sender'),
-                theme: urlParams.get('theme')
-            };
-            
-            // Update card content
-            document.querySelector('.address-lines span').textContent = `To: ${customCardData.recipient}`;
-            document.querySelector('.page-1 .card-text').textContent = customCardData.message;
-            document.querySelector('.signature').innerHTML = `With love,<br>${customCardData.sender}`;
-            
-            // Apply theme
-            cardPagesArray.forEach(page => {
-                page.className = `card-page ${page.classList[1]}`;
-                if (customCardData.theme !== 'default') {
-                    page.classList.add(`theme-${customCardData.theme}`);
+        // Social sharing
+        socialButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const url = shareLink.value;
+                const text = `Check out this e-card I made for you!`;
+                
+                if (button.classList.contains('whatsapp')) {
+                    window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+                } else if (button.classList.contains('email')) {
+                    window.open(`mailto:?subject=E-Card for You&body=${encodeURIComponent(text + '\n\n' + url)}`, '_blank');
+                } else if (button.classList.contains('facebook')) {
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+                } else if (button.classList.contains('twitter')) {
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
                 }
             });
+        });
+        
+        // Create new card
+        createNewCardButton.addEventListener('click', () => {
+            resetApplication();
+            changeSection('gallery-section');
+        });
+    }
+    
+    // Section Navigation
+    function changeSection(sectionId) {
+        // Update navigation buttons
+        navButtons.forEach(button => {
+            if (button.id === sectionId.replace('section', 'btn')) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        });
+        
+        // Update visible section
+        sections.forEach(section => {
+            if (section.id === sectionId) {
+                section.classList.add('active');
+            } else {
+                section.classList.remove('active');
+            }
+        });
+        
+        currentSection = sectionId;
+        
+        // Special actions when changing to certain sections
+        if (sectionId === 'preview-section') {
+            resetCardPreview();
         }
     }
     
-    // Initialize
-    loadSharedCard();
+    // Card Filtering by category
+    function filterCards(category) {
+        cardTemplates.forEach(card => {
+            if (category === 'all' || card.dataset.category === category) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    // Update preview page display
+    function updatePreviewPageDisplay() {
+        previewPages.forEach((page, index) => {
+            if (index === currentPreviewPage) {
+                page.classList.add('active');
+            } else {
+                page.classList.remove('active');
+            }
+        });
+        
+        currentPageSpan.textContent = currentPreviewPage + 1;
+    }
+    
+    // Update card data from form inputs
+    function updateCardData() {
+        cardData.recipient = document.getElementById('recipient-name').value || 'Someone Special';
+        cardData.message = document.getElementById('card-message').value || 'Your personalized message will appear here.';
+        cardData.sender = document.getElementById('sender-name').value || 'Your Name';
+        cardData.fontFamily = document.getElementById('font-family').value;
+        cardData.textColor = document.getElementById('text-color').value;
+    }
+    
+    // Update card preview with current data
+    function updateCardPreview() {
+        // Update customization form values
+        document.getElementById('recipient-name').value = cardData.recipient;
+        document.getElementById('card-message').value = cardData.message;
+        document.getElementById('sender-name').value = cardData.sender;
+        document.getElementById('font-family').value = cardData.fontFamily;
+        document.getElementById('text-color').value = cardData.textColor;
+        
+        // Update preview pages with selected card
+        if (cardData.cardId) {
+            const cardImagePath = `images/cards/${cardData.category}${cardData.cardId}.jpg`;
+            
+            // Front cover
+            document.getElementById('front-cover-preview').style.backgroundImage = `url(${cardImagePath})`;
+            document.getElementById('card-cover-content').style.backgroundImage = `url(${cardImagePath})`;
+            
+            // Inside left (typically has a design related to theme)
+            const insideLeftImagePath = `images/cards/${cardData.category}-inside.jpg`;
+            document.getElementById('inside-left-preview').style.backgroundImage = `url(${insideLeftImagePath})`;
+            document.getElementById('card-inside-left').style.backgroundImage = `url(${insideLeftImagePath})`;
+        }
+        
+        // Update text content
+        document.getElementById('envelope-recipient').textContent = `To: ${cardData.recipient}`;
+        document.getElementById('message-recipient').textContent = cardData.recipient;
+        document.getElementById('message-content').textContent = cardData.message;
+        document.getElementById('message-sender').textContent = cardData.sender;
+        document.getElementById('share-recipient').textContent = cardData.recipient;
+        
+        // Apply text styling
+        const messageContainer = document.querySelector('.message-container');
+        messageContainer.style.fontFamily = cardData.fontFamily;
+        messageContainer.style.color = cardData.textColor;
+    }
+    
+    // Reset card preview animation
+    function resetCardPreview() {
+        envelope.classList.remove('opened', 'card-opened');
+        previewInstructions.textContent = 'Click the envelope to open it';
+    }
+    
+    // Open card animation
+    function openCard() {
+        if (envelope.classList.contains('opened') && !envelope.classList.contains('card-opened')) {
+            envelope.classList.add('card-opened');
+            previewInstructions.textContent = 'Your card is now open';
+        }
+    }
+    
+    // Generate share link
+    function generateShareLink() {
+        const baseUrl = window.location.href.split('?')[0];
+        const params = new URLSearchParams();
+        
+        params.set('id', cardData.cardId);
+        params.set('category', cardData.category);
+        params.set('recipient', cardData.recipient);
+        params.set('message', cardData.message);
+        params.set('sender', cardData.sender);
+        params.set('font', encodeURIComponent(cardData.fontFamily));
+        params.set('color', cardData.textColor.substring(1));
+        
+        shareLink.value = `${baseUrl}?${params.toString()}`;
+    }
+    
+    // Update share thumbnail
+    function updateShareThumbnail() {
+        if (cardData.cardId) {
+            const cardImagePath = `images/cards/${cardData.category}${cardData.cardId}.jpg`;
+            document.getElementById('share-thumbnail').style.backgroundImage = `url(${cardImagePath})`;
+        }
+    }
+    
+    // Load card from URL parameters
+    function loadCardFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.has('id')) {
+            cardData.cardId = urlParams.get('id');
+            cardData.category = urlParams.get('category');
+            cardData.recipient = urlParams.get('recipient');
+            cardData.message = urlParams.get('message');
+            cardData.sender = urlParams.get('sender');
+            cardData.fontFamily = decodeURIComponent(urlParams.get('font'));
+            cardData.textColor = '#' + urlParams.get('color');
+            
+            selectedCardId = cardData.cardId;
+            
+            // If it's a shared card, go directly to preview
+            changeSection('preview-section');
+        }
+    }
+    
+    // Reset application to initial state
+    function resetApplication() {
+        selectedCardId = null;
+        currentPreviewPage = 0;
+        cardData = {
+            cardId: null,
+            recipient: 'Someone Special',
+            message: 'Your personalized message will appear here.',
+            sender: 'Your Name',
+            fontFamily: 'Arial, sans-serif',
+            textColor: '#000000',
+            category: ''
+        };
+        
+        resetCardPreview();
+        updatePreviewPageDisplay();
+        
+        // Reset category filter
+        categoryButtons.forEach(btn => btn.classList.remove('active'));
+        categoryButtons[0].classList.add('active');
+        filterCards('all');
+    }
+    
+    // Initialize the application
+    init();
 });

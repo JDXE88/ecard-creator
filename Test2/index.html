@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flip & Open Envelope</title>
+    <!-- Add Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+            perspective: 1000px;
+        }
+
+        .container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            cursor: pointer;
+        }
+
+        /* Envelope Wrapper (Handles Flip Animation) */
+        .flip-container {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 1s ease-in-out;
+        }
+
+        /* Flipped State */
+        .flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Envelope (Front and Back Faces) */
+        .envelope, .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #f5e1b3; /* Cream color */
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid #e0c597; /* Outline */
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Front Side with Stamp */
+        .envelope {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stamp {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: auto;
+            border: 2px solid #c0a060;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Address styling */
+        .address {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-family: 'Special Elite', cursive;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .address p {
+            margin: 2px 0;
+        }
+
+        /* Back Side with Flap */
+        .envelope-back {
+            transform: rotateY(180deg);
+        }
+
+        .flap {
+            position: absolute;
+            width: 100%;
+            height: 100px;
+            background: #e3c998;
+            top: 0;
+            transform-origin: top;
+            transition: transform 1s ease-in-out;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            border-bottom: 3px solid #d1b48c;
+        }
+
+        /* E-Card */
+        .ecard-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0;
+            transition: transform 0.8s ease-in-out, opacity 0.8s;
+            z-index: 10;
+            max-width: 100%;
+            max-height: 100%;
+            cursor: pointer;
+        }
+
+        .ecard-container img {
+            width: auto;
+            height: auto;
+            max-width: 90vw;
+            max-height: 90vh;
+            display: block;
+        }
+
+        /* Greeting Message */
+        .greeting-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 20;
+            font-family: 'Special Elite', cursive;
+            text-align: center;
+            /* Same dimensions as e-card will be maintained via JS */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .greeting-message {
+            font-size: 20px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .close-greeting {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #e0c597;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Special Elite', cursive;
+            transition: background-color 0.3s;
+            margin-top: auto;
+        }
+
+        .close-greeting:hover {
+            background-color: #d1b48c;
+        }
+
+        /* Open animation */
+        .envelope-back.open .flap {
+            transform: rotateX(180deg);
+        }
+
+        .envelope-back.open + .ecard-container {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .show-greeting {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" onclick="flipEnvelope()">
+        <div class="flip-container">
+            <!-- Front Side -->
+            <div class="envelope">
+                <img class="stamp" src="stamp.png" alt="UK Stamp">
+                <div class="address">
+                    <p>John Smith</p>
+                    <p>123 Main Street</p>
+                    <p>London, SW1A 1AA</p>
+                    <p>United Kingdom</p>
+                </div>
+            </div>
+            <!-- Back Side -->
+            <div class="envelope-back" onclick="openEnvelope(event)">
+                <div class="flap"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ecard-container" onclick="showGreeting()">
+        <img src="ecard.png" alt="E-Card" id="ecardImage">
+    </div>
+
+    <div class="greeting-container" id="greetingContainer">
+        <div class="greeting-message">
+            Wishing you joy and happiness during this special season!<br>
+            May your days be merry and bright.
+        </div>
+        <button class="close-greeting" onclick="closeGreeting()">Close</button>
+    </div>
+
+    <script>
+        let isFlipped = false;
+
+        function flipEnvelope() {
+            if (!isFlipped) {
+                document.querySelector('.flip-container').classList.add('flipped');
+                isFlipped = true;
+            }
+        }
+
+        function openEnvelope(event) {
+            event.stopPropagation();
+            document.querySelector('.envelope-back').classList.add('open');
+            document.querySelector('.ecard-container').style.opacity = "1";
+            document.querySelector('.ecard-container').style.transform = "translate(-50%, -50%) scale(1)";
+        }
+
+        function showGreeting() {
+            // Get the dimensions of the e-card image
+            const ecardImage = document.getElementById('ecardImage');
+            const greetingContainer = document.getElementById('greetingContainer');
+            
+            // Set the greeting container to match e-card dimensions
+            greetingContainer.style.width = ecardImage.offsetWidth + 'px';
+            greetingContainer.style.height = ecardImage.offsetHeight + 'px';
+            
+            // Show the greeting
+            greetingContainer.classList.add('show-greeting');
+        }
+
+        function closeGreeting() {
+            // Refresh the page completely
+            window.location.reload();
+        }
+    </script>
+
+</body>
+</html>

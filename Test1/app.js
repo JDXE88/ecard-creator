@@ -393,12 +393,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Apply customization
-        applyCustomizationButton.addEventListener('click', () => {
-            updateCardData();
-            updateCardPreview();
-        });
-
         // Envelope interaction
         envelope.addEventListener('click', () => {
             if (!envelope.classList.contains('opened')) {
@@ -515,11 +509,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update card data from form inputs
     function updateCardData() {
-        cardData.recipient = document.getElementById('recipient-name').value || 'Someone Special';
-        cardData.message = document.getElementById('card-message').value || 'Your personalized message will appear here.';
-        cardData.sender = document.getElementById('sender-name').value || 'Your Name';
-        cardData.fontFamily = document.getElementById('font-family').value;
-        cardData.textColor = document.getElementById('text-color').value;
+        // Replace the event listener for applyCustomizationButton with real-time updates
+        // Remove this block:
+        /*
+        applyCustomizationButton.addEventListener('click', () => {
+            updateCardData();
+            updateCardPreview();
+        });
+        */
+
+        // Add these real-time update listeners instead:
+        document.getElementById('recipient-name').addEventListener('input', () => {
+            cardData.recipient = document.getElementById('recipient-name').value || 'Someone Special';
+            updateCardPreview();
+        });
+
+        document.getElementById('card-message').addEventListener('input', () => {
+            cardData.message = document.getElementById('card-message').value || 'Your personalized message will appear here.';
+            updateCardPreview();
+        });
+
+        document.getElementById('sender-name').addEventListener('input', () => {
+            cardData.sender = document.getElementById('sender-name').value || 'Your Name';
+            updateCardPreview();
+        });
+
+        document.getElementById('font-family').addEventListener('change', () => {
+            cardData.fontFamily = document.getElementById('font-family').value;
+            updateCardPreview();
+        });
+
+        document.getElementById('text-color').addEventListener('input', () => {
+            cardData.textColor = document.getElementById('text-color').value;
+            updateCardPreview();
+        });
     }
 
     // Update card preview with current data

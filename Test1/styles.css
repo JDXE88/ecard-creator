@@ -407,9 +407,7 @@ body {
 }
 
 
-.envelope.opened .envelope-front {
-    transform: rotateY(180deg);
-}
+
 
 .envelope.opened .stamp {
     display: none; /* Hide the stamp when envelope is opened */
@@ -488,6 +486,15 @@ body {
 
 .envelope.opened .envelope-flap {
     transform: rotateX(180deg);
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+}
+
+.envelope.opened .envelope-front,
+.envelope.opened .envelope-back,
+.envelope.opened .envelope-flap {
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
 }
 
 /* In styles.css, change this CSS rule */
@@ -499,6 +506,7 @@ body {
     border-radius: 8px;
     z-index: 5;
 }
+
 .card-content {
     position: absolute;
     top: 50%;
@@ -507,8 +515,10 @@ body {
     height: 80%;
     transform: translate(-50%, -50%);
     z-index: 1;
+    opacity: 0; /* Start with card invisible */
     perspective: 1500px;
-}
+    transition: opacity 0.5s ease-in-out;
+  }
 
 .card-book {
     width: 100%;
@@ -519,9 +529,22 @@ body {
     transform-origin: center left;
 }
 
+/* Center the card after envelope opens */
 .envelope.opened .card-book {
-    transform: translateY(-30px); /* Just lift the card slightly out of envelope */
-}
+    transform: translateY(0); /* Remove the negative translateY */
+    transition: transform 0.8s ease-in-out;
+  }
+  
+  /* Adjust card opening animation */
+  .envelope.card-opened .card-book {
+    transform: rotateY(-160deg); /* Rotate from the spine, without any translation */
+  }
+  
+  /* Make inside pages visible after card is opened */
+  .card-page.turning + .card-page.inside-left,
+  .card-page.turning + .card-page.inside-left + .card-page.inside-right {
+    z-index: 10;
+  }
 
 .envelope.card-opened .card-book {
     transform: translateY(-30px) translateX(5%) rotateY(-160deg); /* Rotate from the spine */
@@ -530,6 +553,11 @@ body {
 .envelope.card-opened .logo-small {
     opacity: 1; /* Show logo after card is opened */
 }
+
+.envelope.opened .card-content {
+    opacity: 1;
+    z-index: 30; /* Ensure it's above other elements */
+  }
 
 .card-page {
     position: absolute;

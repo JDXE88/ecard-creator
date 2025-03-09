@@ -401,8 +401,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // After envelope opens, allow clicking on card
                 setTimeout(() => {
-                    envelope.addEventListener('click', openCard, { once: true });
-                }, 1500);
+                    const cardContent = document.querySelector('.card-content');
+                    cardContent.addEventListener('click', openCard, { once: true });
+                }, 1000); // Give time for the envelope to fully open and disappear
             }
         });
 
@@ -599,8 +600,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // After animation completes, show inside pages
             setTimeout(() => {
-                document.querySelector('.card-page.inside-left').style.zIndex = '5';
-                document.querySelector('.card-page.inside-right').style.zIndex = '5';
+                document.querySelector('.card-page.inside-left').style.zIndex = '10';
+                document.querySelector('.card-page.inside-right').style.zIndex = '10';
             }, 500);
         }
     }

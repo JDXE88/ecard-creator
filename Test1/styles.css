@@ -394,7 +394,6 @@ body {
     width: 100%;
     height: 100%;
     background-color: #f5e1b3;
-    /* Cream color envelope */
     border-radius: 8px;
     display: flex;
     justify-content: center;
@@ -403,12 +402,25 @@ body {
     transform-origin: center;
     transition: transform 1s ease-in-out;
     border: 3px solid #e0c597;
-    /* Envelope outline */
+    /* Backface visibility will ensure the envelope disappears when flipped */
+    backface-visibility: hidden;
 }
 
 
 .envelope.opened .envelope-front {
     transform: rotateY(180deg);
+}
+
+.envelope.opened .stamp {
+    display: none; /* Hide the stamp when envelope is opened */
+}
+
+.envelope.opened .address-lines {
+    display: none; /* Hide the address when envelope is opened */
+}
+
+.envelope.opened .postmark {
+    display: none; /* Hide the postmark when envelope is opened */
 }
 
 .envelope-design {

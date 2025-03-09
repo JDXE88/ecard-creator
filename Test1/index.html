@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <link rel="icon" href="images/icon-192x192.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Header -->
@@ -104,11 +106,13 @@
                                 </div>
                             </div>
                             <div class="preview-controls">
-                                <button id="prev-page" class="preview-control-btn"><i class="fas fa-chevron-left"></i></button>
+                                <button id="prev-page" class="preview-control-btn"><i
+                                        class="fas fa-chevron-left"></i></button>
                                 <div class="page-indicator">
                                     <span id="current-page">1</span>/<span id="total-pages">4</span>
                                 </div>
-                                <button id="next-page" class="preview-control-btn"><i class="fas fa-chevron-right"></i></button>
+                                <button id="next-page" class="preview-control-btn"><i
+                                        class="fas fa-chevron-right"></i></button>
                             </div>
                         </div>
                     </div>
@@ -121,7 +125,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="card-message">Your Message:</label>
-                                <textarea id="card-message" placeholder="Write your personal message here..."></textarea>
+                                <textarea id="card-message"
+                                    placeholder="Write your personal message here..."></textarea>
                             </div>
                             <div class="form-group">
                                 <label for="sender-name">From:</label>
@@ -141,6 +146,16 @@
                                 <label for="text-color">Text Color:</label>
                                 <input type="color" id="text-color" value="#000000">
                             </div>
+                            <!-- Add to index.html in the customization-panel section -->
+                            <div class="form-group">
+                                <label for="custom-image">Upload Custom Image:</label>
+                                <input type="file" id="custom-image" accept="image/*">
+                                <button id="use-custom-image" class="secondary-btn">Use Custom Image</button>
+                            </div>
+                            <!-- Add to customize-section in index.html -->
+                            <div class="form-group" style="text-align: center; margin-top: 1rem;">
+                                <button id="save-card" class="secondary-btn">Save Card Design</button>
+                            </div>
                             <button id="apply-customization" class="primary-btn">Apply Changes</button>
                         </div>
                     </div>
@@ -155,15 +170,15 @@
                         <div class="envelope">
                             <div class="envelope-front">
                                 <div class="envelope-design">
-                                  <div class="stamp">
-                                    <img src="images/stamp.png" alt="Stamp">
-                                  </div>
-                                  <div class="address-lines">
-                                    <span id="envelope-recipient">To: Someone Special</span>
-                                  </div>
-                                  <div class="postmark"></div>
+                                    <div class="stamp">
+                                        <img src="images/stamp.png" alt="Stamp">
+                                    </div>
+                                    <div class="address-lines">
+                                        <span id="envelope-recipient">To: Someone Special</span>
+                                    </div>
+                                    <div class="postmark"></div>
                                 </div>
-                              </div>
+                            </div>
                             <div class="envelope-flap"></div>
                             <div class="envelope-back"></div>
                             <div class="card-content">
@@ -176,9 +191,12 @@
                                     </div>
                                     <div class="card-page inside-right">
                                         <div class="message-container">
-                                            <p class="message-to">Dear <span id="message-recipient">Someone Special</span>,</p>
-                                            <p id="message-content" class="message-content">Your personalized message will appear here.</p>
-                                            <p class="message-from">With love,<br><span id="message-sender">Your Name</span></p>
+                                            <p class="message-to">Dear <span id="message-recipient">Someone
+                                                    Special</span>,</p>
+                                            <p id="message-content" class="message-content">Your personalized message
+                                                will appear here.</p>
+                                            <p class="message-from">With love,<br><span id="message-sender">Your
+                                                    Name</span></p>
                                         </div>
                                     </div>
                                     <div class="card-page back-cover">
@@ -255,4 +273,5 @@
         }
     </script>
 </body>
+
 </html>

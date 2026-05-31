@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send an E-Card</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Playfair+Display&family=Dancing+Script&family=Courier+Prime&family=Lato&family=Pacifico&display=swap">
     <style>
         * { box-sizing: border-box; }
         body {
@@ -12,7 +12,6 @@
             background: #fdf6ec;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
             min-height: 100vh;
             margin: 0;
             padding: 40px 20px;
@@ -23,39 +22,93 @@
             box-shadow: 0 8px 30px rgba(0,0,0,0.12);
             padding: 36px 40px;
             width: 100%;
-            max-width: 520px;
+            max-width: 560px;
+            height: fit-content;
         }
-        h1 { font-size: 26px; color: #5a3e1b; margin: 0 0 6px; text-align: center; }
-        .subtitle { text-align: center; color: #9a7a50; font-size: 14px; margin-bottom: 28px; }
-        label { display: block; font-size: 13px; color: #7a5c30; margin-bottom: 6px; margin-top: 18px; }
-        input[type="text"], textarea, input[type="url"] {
+        h1 { font-size: 26px; color: #5a3e1b; margin: 0 0 4px; text-align: center; }
+        .subtitle { text-align: center; color: #9a7a50; font-size: 14px; margin-bottom: 24px; }
+        .section-title {
+            font-size: 13px; font-weight: bold; color: #5a3e1b;
+            margin-top: 24px; margin-bottom: 8px;
+            border-bottom: 1px solid #e0c597; padding-bottom: 4px;
+        }
+        label { display: block; font-size: 13px; color: #7a5c30; margin-bottom: 5px; margin-top: 14px; }
+        input[type="text"], textarea, input[type="url"], select {
             width: 100%; padding: 10px 14px; border: 2px solid #e0c597;
             border-radius: 8px; font-family: 'Special Elite', cursive;
             font-size: 14px; color: #333; background: #fffdf7;
             outline: none; transition: border-color 0.2s; resize: vertical;
         }
-        input[type="text"]:focus, textarea:focus, input[type="url"]:focus { border-color: #c0a060; }
+        input:focus, textarea:focus, select:focus { border-color: #c0a060; }
+
+        /* Shape selector */
+        .shape-grid { display: flex; gap: 12px; margin-top: 4px; }
+        .shape-opt {
+            flex: 1; border: 2px solid #e0c597; border-radius: 10px;
+            padding: 12px 8px; text-align: center; cursor: pointer;
+            transition: all 0.2s; background: #fffdf7;
+        }
+        .shape-opt:hover { border-color: #c0a060; background: #fdf3e0; }
+        .shape-opt.selected { border-color: #c0a060; background: #fdf3e0; box-shadow: 0 0 0 2px #c0a060; }
+        .shape-icon { margin-bottom: 6px; }
+        .shape-sq { width: 36px; height: 36px; background: #e0c597; border-radius: 4px; margin: 0 auto 6px; }
+        .shape-land { width: 52px; height: 34px; background: #e0c597; border-radius: 4px; margin: 0 auto 6px; }
+        .shape-port { width: 30px; height: 44px; background: #e0c597; border-radius: 4px; margin: 0 auto 6px; }
+        .shape-label { font-size: 12px; color: #7a5c30; }
+
+        /* Colour picker */
+        .colour-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+        .colour-swatch {
+            width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+            border: 3px solid transparent; transition: transform 0.2s, border-color 0.2s;
+        }
+        .colour-swatch:hover { transform: scale(1.15); }
+        .colour-swatch.selected { border-color: #333; transform: scale(1.15); }
+
+        /* Font selector */
+        .font-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+        .font-opt {
+            flex: 1; min-width: 80px; border: 2px solid #e0c597; border-radius: 8px;
+            padding: 8px; text-align: center; cursor: pointer;
+            background: #fffdf7; transition: all 0.2s; font-size: 15px;
+        }
+        .font-opt:hover { border-color: #c0a060; background: #fdf3e0; }
+        .font-opt.selected { border-color: #c0a060; background: #fdf3e0; box-shadow: 0 0 0 2px #c0a060; }
+        .font-name { font-size: 10px; color: #9a7a50; margin-top: 2px; }
+
+        /* Upload */
         .upload-area {
             border: 2px dashed #e0c597; border-radius: 8px; padding: 20px;
             text-align: center; cursor: pointer; background: #fffdf7;
-            transition: border-color 0.2s, background 0.2s; position: relative;
+            transition: border-color 0.2s; position: relative;
         }
         .upload-area:hover { border-color: #c0a060; background: #fdf3e0; }
         .upload-area input[type="file"] {
             position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
         }
         .upload-label { font-size: 13px; color: #9a7a50; pointer-events: none; }
-        #preview { margin-top: 12px; max-width: 100%; max-height: 200px; border-radius: 8px; display: none; border: 2px solid #e0c597; }
+        #preview { margin-top: 10px; max-width: 100%; max-height: 160px; border-radius: 8px; display: none; border: 2px solid #e0c597; }
         .url-toggle { font-size: 12px; color: #9a7a50; cursor: pointer; text-decoration: underline; margin-top: 6px; display: inline-block; }
         #urlInput { display: none; margin-top: 8px; }
+
+        /* Textarea pages */
+        .page-tabs { display: flex; gap: 0; margin-top: 8px; border-bottom: 2px solid #e0c597; }
+        .page-tab {
+            padding: 7px 14px; font-size: 12px; cursor: pointer; color: #9a7a50;
+            font-family: 'Special Elite', cursive; border: none; background: none;
+            border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s;
+        }
+        .page-tab.active { color: #5a3e1b; border-bottom-color: #c0a060; }
+        .page-content { display: none; margin-top: 10px; }
+        .page-content.active { display: block; }
+
         .btn {
             width: 100%; margin-top: 28px; padding: 14px; background: #e0c597;
             color: #5a3e1b; border: none; border-radius: 8px;
-            font-family: 'Special Elite', cursive; font-size: 16px;
-            cursor: pointer; transition: background 0.2s;
+            font-family: 'Special Elite', cursive; font-size: 16px; cursor: pointer; transition: background 0.2s;
         }
         .btn:hover { background: #c0a060; }
-        .result-box { display: none; margin-top: 22px; background: #fdf3e0; border: 2px solid #e0c597; border-radius: 8px; padding: 16px; }
+        .result-box { display: none; margin-top: 20px; background: #fdf3e0; border: 2px solid #e0c597; border-radius: 8px; padding: 16px; }
         .result-box p { font-size: 13px; color: #7a5c30; margin: 0 0 10px; }
         .link-row { display: flex; gap: 8px; }
         .link-row input {
@@ -76,28 +129,116 @@
 <body>
 <div class="card">
     <h1>✉️ Send an E-Card</h1>
-    <p class="subtitle">Fill in the details below and share the link with your recipient.</p>
+    <p class="subtitle">Personalise every detail, then share the link.</p>
 
+    <!-- ENVELOPE SHAPE -->
+    <div class="section-title">Envelope Shape</div>
+    <div class="shape-grid">
+        <div class="shape-opt selected" data-shape="landscape" onclick="selectShape(this)">
+            <div class="shape-land"></div>
+            <div class="shape-label">Landscape</div>
+        </div>
+        <div class="shape-opt" data-shape="portrait" onclick="selectShape(this)">
+            <div class="shape-port"></div>
+            <div class="shape-label">Portrait</div>
+        </div>
+        <div class="shape-opt" data-shape="square" onclick="selectShape(this)">
+            <div class="shape-sq"></div>
+            <div class="shape-label">Square</div>
+        </div>
+    </div>
+
+    <!-- ENVELOPE COLOUR -->
+    <div class="section-title">Envelope Colour</div>
+    <div class="colour-grid" id="colourGrid">
+        <div class="colour-swatch selected" style="background:#f5e1b3" data-colour="#f5e1b3" data-border="#e0c597" data-flap="#e3c998" title="Cream" onclick="selectColour(this)"></div>
+        <div class="colour-swatch" style="background:#d4e8f5" data-colour="#d4e8f5" data-border="#a8c8e0" data-flap="#b8d4ea" title="Sky Blue" onclick="selectColour(this)"></div>
+        <div class="colour-swatch" style="background:#f5d4d4" data-colour="#f5d4d4" data-border="#e0a8a8" data-flap="#eac0c0" title="Rose" onclick="selectColour(this)"></div>
+        <div class="colour-swatch" style="background:#d4f5d4" data-colour="#d4f5d4" data-border="#a8e0a8" data-flap="#b8eab8" title="Mint" onclick="selectColour(this)"></div>
+        <div class="colour-swatch" style="background:#e8d4f5" data-colour="#e8d4f5" data-border="#c8a8e0" data-flap="#d4b8ea" title="Lavender" onclick="selectColour(this)"></div>
+        <div class="colour-swatch" style="background:#f5f0d4" data-colour="#f5f0d4" data-border="#e0d8a8" data-flap="#eae0b8" title="Lemon" onclick="selectColour(this)"></div>
+        <div class="colour-swatch" style="background:#2c3e50" data-colour="#2c3e50" data-border="#1a252f" data-flap="#34495e" title="Midnight" onclick="selectColour(this)"></div>
+        <div class="colour-swatch" style="background:#c0392b" data-colour="#c0392b" data-border="#962d22" data-flap="#e74c3c" title="Red" onclick="selectColour(this)"></div>
+    </div>
+
+    <!-- RECIPIENT -->
+    <div class="section-title">Recipient Details</div>
     <label>Recipient Name</label>
     <input type="text" id="recipientName" placeholder="e.g. Jane Doe" maxlength="60">
-
     <label>Recipient Address</label>
-    <textarea id="address" rows="4" placeholder="123 High Street&#10;London, SW1A 1AA&#10;United Kingdom" maxlength="300"></textarea>
+    <textarea id="address" rows="3" placeholder="123 High Street&#10;London, SW1A 1AA&#10;United Kingdom" maxlength="300"></textarea>
 
-    <label>Your Message</label>
-    <textarea id="message" rows="4" placeholder="Wishing you a wonderful birthday!" maxlength="500" oninput="updateCount()"></textarea>
-    <div class="char-count"><span id="charCount">0</span> / 500</div>
-
-    <label>Card Image</label>
-    <div class="upload-area">
-        <input type="file" accept="image/*" id="fileInput" onchange="handleFile(event)">
-        <div class="upload-label">📎 Click or drag an image here to upload</div>
+    <!-- CARD PAGES -->
+    <div class="section-title">Card Content (4 pages)</div>
+    <div class="page-tabs">
+        <button class="page-tab active" onclick="switchTab(this,'tab-front')">📄 Front</button>
+        <button class="page-tab" onclick="switchTab(this,'tab-inside-left')">📖 Inside Left</button>
+        <button class="page-tab" onclick="switchTab(this,'tab-inside-right')">📝 Inside Right</button>
+        <button class="page-tab" onclick="switchTab(this,'tab-back')">🔙 Back</button>
     </div>
-    <img id="preview" alt="Image preview">
-    <div class="warning" id="sizeWarning">⚠️ Image is large (&gt;200KB). The link may be very long — consider using a URL instead.</div>
-    <span class="url-toggle" onclick="toggleUrl()">Or use an image URL instead ↓</span>
-    <div id="urlInput">
-        <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg" oninput="previewUrl()">
+
+    <div class="page-content active" id="tab-front">
+        <label>Front Image</label>
+        <div class="upload-area">
+            <input type="file" accept="image/*" id="fileInput" onchange="handleFile(event)">
+            <div class="upload-label">📎 Click or drag image here</div>
+        </div>
+        <img id="preview" alt="Preview">
+        <div class="warning" id="sizeWarning">⚠️ Large image — consider using a URL instead.</div>
+        <span class="url-toggle" onclick="toggleUrl()">Or use an image URL ↓</span>
+        <div id="urlInput">
+            <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg" oninput="previewUrl()">
+        </div>
+    </div>
+
+    <div class="page-content" id="tab-inside-left">
+        <label>Inside Left — image or decorative text</label>
+        <textarea id="insideLeft" rows="5" placeholder="Leave blank, or write something here..."></textarea>
+        <div class="upload-area" style="margin-top:8px">
+            <input type="file" accept="image/*" id="insideLeftFile" onchange="handleInsideLeft(event)">
+            <div class="upload-label">📎 Optional image for left page</div>
+        </div>
+        <img id="previewInsideLeft" alt="Left preview" style="margin-top:10px;max-width:100%;max-height:120px;border-radius:8px;display:none;border:2px solid #e0c597;">
+    </div>
+
+    <div class="page-content" id="tab-inside-right">
+        <label>Inside Right — your message</label>
+        <textarea id="message" rows="6" placeholder="Wishing you a wonderful birthday!" maxlength="800" oninput="updateCount()"></textarea>
+        <div class="char-count"><span id="charCount">0</span> / 800</div>
+    </div>
+
+    <div class="page-content" id="tab-back">
+        <label>Back of card — optional note or signature</label>
+        <textarea id="backText" rows="4" placeholder="With love ❤️"></textarea>
+    </div>
+
+    <!-- FONT -->
+    <div class="section-title">Message Font</div>
+    <div class="font-grid" id="fontGrid">
+        <div class="font-opt selected" data-font="Special Elite" onclick="selectFont(this)">
+            <span style="font-family:'Special Elite'">Aa</span>
+            <div class="font-name">Typewriter</div>
+        </div>
+        <div class="font-opt" data-font="Playfair Display" onclick="selectFont(this)">
+            <span style="font-family:'Playfair Display'">Aa</span>
+            <div class="font-name">Elegant</div>
+        </div>
+        <div class="font-opt" data-font="Dancing Script" onclick="selectFont(this)">
+            <span style="font-family:'Dancing Script'">Aa</span>
+            <div class="font-name">Handwritten</div>
+        </div>
+        <div class="font-opt" data-font="Courier Prime" onclick="selectFont(this)">
+            <span style="font-family:'Courier Prime'">Aa</span>
+            <div class="font-name">Courier</div>
+        </div>
+        <div class="font-opt" data-font="Lato" onclick="selectFont(this)">
+            <span style="font-family:'Lato'">Aa</span>
+            <div class="font-name">Modern</div>
+        </div>
+        <div class="font-opt" data-font="Pacifico" onclick="selectFont(this)">
+            <span style="font-family:'Pacifico'">Aa</span>
+            <div class="font-name">Fun</div>
+        </div>
     </div>
 
     <button class="btn" onclick="generateLink()">Generate Shareable Link →</button>
@@ -114,6 +255,35 @@
 
 <script>
     let base64Image = null;
+    let base64InsideLeft = null;
+    let selectedShape = 'landscape';
+    let selectedFont = 'Special Elite';
+    let selectedColour = { bg: '#f5e1b3', border: '#e0c597', flap: '#e3c998' };
+
+    function selectShape(el) {
+        document.querySelectorAll('.shape-opt').forEach(e => e.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedShape = el.dataset.shape;
+    }
+
+    function selectFont(el) {
+        document.querySelectorAll('.font-opt').forEach(e => e.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedFont = el.dataset.font;
+    }
+
+    function selectColour(el) {
+        document.querySelectorAll('.colour-swatch').forEach(e => e.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedColour = { bg: el.dataset.colour, border: el.dataset.border, flap: el.dataset.flap };
+    }
+
+    function switchTab(btn, tabId) {
+        document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.page-content').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
 
     function updateCount() {
         document.getElementById('charCount').textContent = document.getElementById('message').value.length;
@@ -128,25 +298,33 @@
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(ev) {
+        reader.onload = ev => {
             base64Image = ev.target.result;
-            const preview = document.getElementById('preview');
-            preview.src = base64Image;
-            preview.style.display = 'block';
-            const warn = document.getElementById('sizeWarning');
-            warn.style.display = file.size > 200000 ? 'block' : 'none';
+            const p = document.getElementById('preview');
+            p.src = base64Image; p.style.display = 'block';
+            document.getElementById('sizeWarning').style.display = file.size > 200000 ? 'block' : 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function handleInsideLeft(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+            base64InsideLeft = ev.target.result;
+            const p = document.getElementById('previewInsideLeft');
+            p.src = base64InsideLeft; p.style.display = 'block';
         };
         reader.readAsDataURL(file);
     }
 
     function previewUrl() {
         const url = document.getElementById('imageUrl').value;
-        const preview = document.getElementById('preview');
         if (url) {
-            preview.src = url;
-            preview.style.display = 'block';
+            const p = document.getElementById('preview');
+            p.src = url; p.style.display = 'block';
             base64Image = null;
-            document.getElementById('sizeWarning').style.display = 'none';
         }
     }
 
@@ -155,39 +333,42 @@
         const address = document.getElementById('address').value.trim();
         const message = document.getElementById('message').value.trim();
         const imageUrl = document.getElementById('imageUrl').value.trim();
+        const insideLeft = document.getElementById('insideLeft').value.trim();
+        const backText = document.getElementById('backText').value.trim();
 
         if (!name || !address || !message) {
-            alert('Please fill in the recipient name, address, and message.');
-            return;
+            alert('Please fill in recipient name, address and the inside message.'); return;
         }
-        const imageSource = base64Image || imageUrl;
-        if (!imageSource) {
-            alert('Please upload an image or provide an image URL.');
-            return;
-        }
+        const imgSrc = base64Image || imageUrl;
+        if (!imgSrc) { alert('Please add a front image (upload or URL).'); return; }
 
-        const params = new URLSearchParams();
-        params.set('name', name);
-        params.set('address', address);
-        params.set('message', message);
-        params.set('img', imageSource);
+        const p = new URLSearchParams();
+        p.set('name', name);
+        p.set('address', address);
+        p.set('message', message);
+        p.set('img', imgSrc);
+        p.set('shape', selectedShape);
+        p.set('font', selectedFont);
+        p.set('cbg', selectedColour.bg);
+        p.set('cborder', selectedColour.border);
+        p.set('cflap', selectedColour.flap);
+        if (insideLeft) p.set('iltext', insideLeft);
+        if (base64InsideLeft) p.set('ilimg', base64InsideLeft);
+        if (backText) p.set('back', backText);
 
-        const base = window.location.href.replace('index.html', '').replace(/\?.*$/, '');
-        const link = base + 'card.html?' + params.toString();
+        const base = window.location.href.replace('index.html','').replace(/\?.*$/,'');
+        const link = base + 'card.html?' + p.toString();
         document.getElementById('generatedLink').value = link;
         document.getElementById('resultBox').style.display = 'block';
-
         const note = document.getElementById('sizeNote');
-        if (base64Image) {
-            note.textContent = '⚠️ Image is embedded in the URL. For best results, host your image online and use a URL instead to keep the link short.';
-        } else {
-            note.textContent = '✅ Using an image URL keeps the link short and reliable.';
-        }
+        note.textContent = base64Image
+            ? '⚠️ Image embedded in URL — consider hosting it online for a shorter link.'
+            : '✅ Using image URL keeps the link short and reliable.';
+        document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
     }
 
     function copyLink() {
-        const input = document.getElementById('generatedLink');
-        navigator.clipboard.writeText(input.value).then(() => {
+        navigator.clipboard.writeText(document.getElementById('generatedLink').value).then(() => {
             const btn = document.querySelector('.copy-btn');
             btn.textContent = 'Copied!';
             setTimeout(() => btn.textContent = 'Copy', 2000);

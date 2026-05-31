@@ -2,31 +2,30 @@
 
 An interactive e-card experience hosted on GitHub/GitLab Pages. No server required.
 
-## How it works
+## Features
+- 3 envelope shapes: Landscape, Portrait, Square
+- 8 envelope colours
+- 4-page card: Front cover, Inside Left, Inside Right (message), Back
+- 6 font choices for your message
+- Entirely URL-driven — no backend needed
 
-1. The **sender** opens `index.html`, fills in the recipient name, address, message and uploads (or links) a card image.
-2. Clicking **Generate Shareable Link** produces a `card.html?...` URL with all the data encoded in query parameters.
-3. The sender copies and shares the link (via email, WhatsApp, etc.).
-4. The **recipient** opens the link and sees an interactive envelope — click to flip it, open the flap, reveal the card, then read the message.
+## How it works
+1. Sender opens `index.html`, fills in all details and generates a shareable link
+2. Recipient opens the link → interactive envelope appears
+3. Click to flip → click to open flap → card slides out → open the book to read
 
 ## Files
-
 | File | Purpose |
 |------|---------|
 | `index.html` | Compose UI for the sender |
-| `card.html` | Interactive envelope viewer for the recipient |
+| `card.html` | Interactive card experience for the recipient |
 | `README.md` | This file |
 
-> **Note:** The stamp image is embedded directly into `card.html` as a Base64 data URL, so no extra assets are needed.
+## GitHub Pages setup
+1. Push files to repo root
+2. Settings → Pages → Source: main branch, / (root)
+3. Live at `https://<username>.github.io/<repo>/`
 
-## Deploying to GitHub Pages
-
-1. Push these files to a GitHub repository.
-2. Go to **Settings → Pages**.
-3. Set the source branch to `main` (or `master`) and folder to `/ (root)`.
-4. Your site will be live at `https://<username>.github.io/<repo>/`.
-
-## Image tips
-
-- **Uploaded images** are encoded as Base64 in the URL, which works but creates very long links.
-- For the most reliable sharing, host your image on [Imgur](https://imgur.com) or similar and paste the direct URL into the "image URL" field instead.
+## Image tip
+Uploaded images are embedded as Base64 in the URL (long links).
+For best results, host images on Imgur and paste the URL instead.

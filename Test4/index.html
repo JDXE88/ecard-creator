@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send an E-Card</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Special Elite', cursive;
+            background: #fdf6ec;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            padding: 36px 40px;
+            width: 100%;
+            max-width: 520px;
+        }
+        h1 { font-size: 26px; color: #5a3e1b; margin: 0 0 6px; text-align: center; }
+        .subtitle { text-align: center; color: #9a7a50; font-size: 14px; margin-bottom: 28px; }
+        label { display: block; font-size: 13px; color: #7a5c30; margin-bottom: 6px; margin-top: 18px; }
+        input[type="text"], textarea, input[type="url"] {
+            width: 100%; padding: 10px 14px; border: 2px solid #e0c597;
+            border-radius: 8px; font-family: 'Special Elite', cursive;
+            font-size: 14px; color: #333; background: #fffdf7;
+            outline: none; transition: border-color 0.2s; resize: vertical;
+        }
+        input[type="text"]:focus, textarea:focus, input[type="url"]:focus { border-color: #c0a060; }
+        .upload-area {
+            border: 2px dashed #e0c597; border-radius: 8px; padding: 20px;
+            text-align: center; cursor: pointer; background: #fffdf7;
+            transition: border-color 0.2s, background 0.2s; position: relative;
+        }
+        .upload-area:hover { border-color: #c0a060; background: #fdf3e0; }
+        .upload-area input[type="file"] {
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+        .upload-label { font-size: 13px; color: #9a7a50; pointer-events: none; }
+        #preview { margin-top: 12px; max-width: 100%; max-height: 200px; border-radius: 8px; display: none; border: 2px solid #e0c597; }
+        .url-toggle { font-size: 12px; color: #9a7a50; cursor: pointer; text-decoration: underline; margin-top: 6px; display: inline-block; }
+        #urlInput { display: none; margin-top: 8px; }
+        .btn {
+            width: 100%; margin-top: 28px; padding: 14px; background: #e0c597;
+            color: #5a3e1b; border: none; border-radius: 8px;
+            font-family: 'Special Elite', cursive; font-size: 16px;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .btn:hover { background: #c0a060; }
+        .result-box { display: none; margin-top: 22px; background: #fdf3e0; border: 2px solid #e0c597; border-radius: 8px; padding: 16px; }
+        .result-box p { font-size: 13px; color: #7a5c30; margin: 0 0 10px; }
+        .link-row { display: flex; gap: 8px; }
+        .link-row input {
+            flex: 1; padding: 8px 12px; border: 2px solid #e0c597;
+            border-radius: 6px; font-size: 12px; color: #333; background: #fff; font-family: monospace;
+        }
+        .copy-btn {
+            padding: 8px 16px; background: #e0c597; border: none; border-radius: 6px;
+            font-family: 'Special Elite', cursive; cursor: pointer; font-size: 13px;
+            color: #5a3e1b; transition: background 0.2s; white-space: nowrap;
+        }
+        .copy-btn:hover { background: #c0a060; }
+        .note { font-size: 11px; color: #b08050; margin-top: 8px; }
+        .char-count { font-size: 11px; color: #b08050; text-align: right; margin-top: 4px; }
+        .warning { color: #c0392b; font-size: 12px; margin-top: 6px; display: none; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>✉️ Send an E-Card</h1>
+    <p class="subtitle">Fill in the details below and share the link with your recipient.</p>
+
+    <label>Recipient Name</label>
+    <input type="text" id="recipientName" placeholder="e.g. Jane Doe" maxlength="60">
+
+    <label>Recipient Address</label>
+    <textarea id="address" rows="4" placeholder="123 High Street&#10;London, SW1A 1AA&#10;United Kingdom" maxlength="300"></textarea>
+
+    <label>Your Message</label>
+    <textarea id="message" rows="4" placeholder="Wishing you a wonderful birthday!" maxlength="500" oninput="updateCount()"></textarea>
+    <div class="char-count"><span id="charCount">0</span> / 500</div>
+
+    <label>Card Image</label>
+    <div class="upload-area">
+        <input type="file" accept="image/*" id="fileInput" onchange="handleFile(event)">
+        <div class="upload-label">📎 Click or drag an image here to upload</div>
+    </div>
+    <img id="preview" alt="Image preview">
+    <div class="warning" id="sizeWarning">⚠️ Image is large (&gt;200KB). The link may be very long — consider using a URL instead.</div>
+    <span class="url-toggle" onclick="toggleUrl()">Or use an image URL instead ↓</span>
+    <div id="urlInput">
+        <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg" oninput="previewUrl()">
+    </div>
+
+    <button class="btn" onclick="generateLink()">Generate Shareable Link →</button>
+
+    <div class="result-box" id="resultBox">
+        <p>🎉 Your link is ready! Share it with your recipient:</p>
+        <div class="link-row">
+            <input type="text" id="generatedLink" readonly>
+            <button class="copy-btn" onclick="copyLink()">Copy</button>
+        </div>
+        <p class="note" id="sizeNote"></p>
+    </div>
+</div>
+
+<script>
+    let base64Image = null;
+
+    function updateCount() {
+        document.getElementById('charCount').textContent = document.getElementById('message').value.length;
+    }
+
+    function toggleUrl() {
+        const el = document.getElementById('urlInput');
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function handleFile(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            base64Image = ev.target.result;
+            const preview = document.getElementById('preview');
+            preview.src = base64Image;
+            preview.style.display = 'block';
+            const warn = document.getElementById('sizeWarning');
+            warn.style.display = file.size > 200000 ? 'block' : 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function previewUrl() {
+        const url = document.getElementById('imageUrl').value;
+        const preview = document.getElementById('preview');
+        if (url) {
+            preview.src = url;
+            preview.style.display = 'block';
+            base64Image = null;
+            document.getElementById('sizeWarning').style.display = 'none';
+        }
+    }
+
+    function generateLink() {
+        const name = document.getElementById('recipientName').value.trim();
+        const address = document.getElementById('address').value.trim();
+        const message = document.getElementById('message').value.trim();
+        const imageUrl = document.getElementById('imageUrl').value.trim();
+
+        if (!name || !address || !message) {
+            alert('Please fill in the recipient name, address, and message.');
+            return;
+        }
+        const imageSource = base64Image || imageUrl;
+        if (!imageSource) {
+            alert('Please upload an image or provide an image URL.');
+            return;
+        }
+
+        const params = new URLSearchParams();
+        params.set('name', name);
+        params.set('address', address);
+        params.set('message', message);
+        params.set('img', imageSource);
+
+        const base = window.location.href.replace('index.html', '').replace(/\?.*$/, '');
+        const link = base + 'card.html?' + params.toString();
+        document.getElementById('generatedLink').value = link;
+        document.getElementById('resultBox').style.display = 'block';
+
+        const note = document.getElementById('sizeNote');
+        if (base64Image) {
+            note.textContent = '⚠️ Image is embedded in the URL. For best results, host your image online and use a URL instead to keep the link short.';
+        } else {
+            note.textContent = '✅ Using an image URL keeps the link short and reliable.';
+        }
+    }
+
+    function copyLink() {
+        const input = document.getElementById('generatedLink');
+        navigator.clipboard.writeText(input.value).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
+    }
+</script>
+</body>
+</html>

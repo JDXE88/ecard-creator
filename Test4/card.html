@@ -2,36 +2,37 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Your E-Card</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Dancing+Script&family=Playfair+Display&family=Courier+Prime&family=Pacifico&family=Lato&display=swap">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%}
+html,body{width:100%;height:100%;overflow:hidden}
 body{
   background:#e8e0d5;
   display:flex;
   align-items:center;
   justify-content:center;
-  min-height:100vh;
   font-family:'Special Elite',cursive;
+  touch-action:manipulation;
 }
 
 /* ─── ENVELOPE ─── */
 #envelope{
   position:relative;
-  width:340px;
-  height:230px;
+  /* default size overridden by JS */
+  width:min(340px,88vw);
+  height:min(230px,59.5vw);
   background:#f5e1b3;
   border:2px solid #d4b87a;
   border-radius:4px;
   box-shadow:0 8px 28px rgba(0,0,0,.3);
   cursor:pointer;
-  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  /* NO transform-style here — would break stacking of absolutely positioned children */
 }
-#envelope:hover{ box-shadow:0 12px 36px rgba(0,0,0,.38); }
 
-/* fold-line decoration */
+/* decorative fold lines */
 #envDeco{
   position:absolute;
   inset:0;
@@ -40,65 +41,77 @@ body{
   z-index:1;
 }
 
-/* flap wrapper — sits over the top portion, flips on .open */
-#flapWrap{
+/* ─── FLAP ─── */
+/*
+  Strategy: the flap is a SEPARATE element sitting ABOVE the envelope
+  using position:absolute. It is a coloured triangle (SVG).
+  On .open we rotateX it around its top edge so it folds back.
+  We put perspective directly on body (no conflicting transforms on #envelope).
+*/
+#flap{
   position:absolute;
   top:0; left:0;
   width:100%;
-  height:50%;          /* covers top half */
-  overflow:hidden;     /* clips the triangle to the envelope top */
+  /* height is ~48% of envelope so the triangle visually covers the top half */
+  height:48%;
+  z-index:10;
   transform-origin:top center;
-  transition:transform 0.8s cubic-bezier(0.4,0,0.2,1);
-  z-index:4;
+  /* perspective must be on THIS element or its parent for rotateX to work */
+  transition:transform 0.75s cubic-bezier(0.4,0,0.2,1);
   pointer-events:none;
-  /* 3-D flip */
-  perspective:600px;
 }
-#flapWrap.open{
-  transform:rotateX(180deg);
-}
+body{perspective:800px}   /* enables 3D for children */
+#envelope{transform-style:preserve-3d}
+#flap{backface-visibility:hidden}
+#flap.open{transform:rotateX(-180deg)}
+
 #flapSvg{
   width:100%;
-  height:200%; /* triangle fills double the wrapper height so it looks right */
+  height:100%;
   display:block;
+  /* overflow visible so shadow shows */
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.15));
 }
 
+/* stamp */
 #stamp{
   position:absolute;
   top:10px; right:12px;
-  width:50px;
+  width:min(50px,13vw);
   border:2px solid rgba(0,0,0,.15);
   box-shadow:2px 2px 5px rgba(0,0,0,.2);
   z-index:3;
   pointer-events:none;
 }
 
-#addressBlock{
+/* address */
+#addr{
   position:absolute;
-  left:50%; top:62%;
+  left:50%; top:65%;
   transform:translate(-50%,-50%);
   text-align:center;
-  font-size:13px;
+  font-size:clamp(10px,3vw,13px);
   line-height:1.55;
   color:#333;
   z-index:3;
   max-width:60%;
   pointer-events:none;
 }
-#addressBlock p{margin:1px 0}
+#addr p{margin:1px 0}
 
-#envHint{
+/* hint */
+#hint{
   position:absolute;
   bottom:8px; left:50%;
   transform:translateX(-50%);
-  font-size:11px;
-  color:rgba(0,0,0,.35);
+  font-size:clamp(9px,2.5vw,11px);
+  color:rgba(0,0,0,.38);
   white-space:nowrap;
   z-index:5;
   pointer-events:none;
 }
 
-/* ─── CARD BOOK ─── */
+/* ─── CARD BOOK OVERLAY ─── */
 #cardBook{
   display:none;
   position:fixed;
@@ -107,12 +120,16 @@ body{
   z-index:100;
   align-items:center;
   justify-content:center;
+  touch-action:manipulation;
 }
 
 #bookWrap{
   display:flex;
+  /* max size fills most of viewport */
+  max-width:96vw;
+  max-height:90vh;
   border-radius:4px;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  box-shadow:0 16px 50px rgba(0,0,0,.6);
   overflow:hidden;
 }
 
@@ -121,137 +138,150 @@ body{
   overflow:hidden;
   background:#fff;
   flex-shrink:0;
-  /* display toggled by JS */
+  display:none; /* hidden by default — showSpread reveals */
 }
 /* spine shadow on right pages */
 .page-r::before{
   content:'';
   position:absolute;
   left:0;top:0;bottom:0;
-  width:8px;
-  background:linear-gradient(to right,rgba(0,0,0,.2),transparent);
+  width:7px;
+  background:linear-gradient(to right,rgba(0,0,0,.18),transparent);
   z-index:2;
   pointer-events:none;
 }
-#frontPage {border-radius:4px 0 0 4px}
-#backPage  {border-radius:0 4px 4px 0}
+#frontPage{border-radius:4px 0 0 4px}
+#backPage{border-radius:0 4px 4px 0}
 
 .page-img{width:100%;height:100%;object-fit:cover;display:block}
 
+/* inside left */
 #insideLeftPage{
   background:#fdf6ec;
-  display:flex;
+  display:none;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  padding:22px;
+  padding:16px;
   gap:10px;
 }
-#insideLeftPage .placeholder{font-size:44px}
+#insideLeftPage .heart{font-size:clamp(28px,8vw,44px)}
 #insideLeftPage img{max-width:100%;max-height:80%;object-fit:contain;border-radius:6px}
 
+/* inside right */
 #insideRightPage{
   background:#fdfaf5;
-  display:flex;
+  display:none;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  padding:28px 22px;
+  padding:clamp(14px,4vw,28px) clamp(12px,4vw,22px);
 }
 .msg{
-  font-size:18px;
+  font-size:clamp(13px,3.5vw,18px);
   line-height:1.75;
   color:#333;
   white-space:pre-wrap;
   text-align:center;
   max-width:100%;
+  overflow-y:auto;
+  max-height:100%;
 }
 
-#backPage .back-inner{
+/* back page */
+#backPage{display:none}
+.back-inner{
   width:100%;height:100%;
   display:flex;
   flex-direction:column;
   justify-content:flex-end;
   align-items:center;
-  padding:22px;
+  padding:18px;
   background:repeating-linear-gradient(0deg,transparent,transparent 27px,#e8e0d0 27px,#e8e0d0 28px);
 }
-.back-note{font-size:13px;color:#aaa;text-align:center}
+.back-note{font-size:clamp(10px,2.8vw,13px);color:#aaa;text-align:center}
 
-/* nav */
+/* ─── NAV BUTTONS ─── */
 .nav-btn{
   position:fixed;
   top:50%;
   transform:translateY(-50%);
-  width:46px;height:46px;
+  width:clamp(36px,10vw,46px);
+  height:clamp(36px,10vw,46px);
   background:rgba(255,255,255,.92);
   border:none;border-radius:50%;
-  font-size:22px;cursor:pointer;
+  font-size:clamp(16px,5vw,22px);
+  cursor:pointer;
   box-shadow:0 2px 12px rgba(0,0,0,.25);
   z-index:300;
   display:none;
   align-items:center;
   justify-content:center;
+  -webkit-tap-highlight-color:transparent;
 }
-.nav-btn:hover{background:#fff}
-#prevBtn{left:14px}
-#nextBtn{right:14px}
+.nav-btn:active{background:#f0f0f0}
+#prevBtn{left:8px}
+#nextBtn{right:8px}
+
 #closeBtn{
   position:fixed;
-  top:14px;right:14px;
-  width:40px;height:40px;
+  top:10px;right:10px;
+  width:clamp(34px,9vw,40px);
+  height:clamp(34px,9vw,40px);
   background:rgba(255,255,255,.92);
   border:none;border-radius:50%;
-  font-size:18px;cursor:pointer;
+  font-size:16px;cursor:pointer;
   box-shadow:0 2px 8px rgba(0,0,0,.2);
   z-index:300;
   display:none;
   align-items:center;
   justify-content:center;
+  -webkit-tap-highlight-color:transparent;
 }
-#closeBtn:hover{background:#fff}
-#pageIndicator{
+#closeBtn:active{background:#f0f0f0}
+
+#pageInd{
   position:fixed;
-  bottom:18px;left:50%;
+  bottom:14px;left:50%;
   transform:translateX(-50%);
   background:rgba(0,0,0,.5);
-  color:#fff;font-size:12px;
-  padding:5px 16px;
-  border-radius:20px;
+  color:#fff;font-size:11px;
+  padding:4px 14px;
+  border-radius:16px;
   z-index:300;
   display:none;
   pointer-events:none;
+  white-space:nowrap;
 }
 
-#errorMsg{
-  color:#9a7a50;text-align:center;padding:40px;display:none;
-}
-#errorMsg a{color:#c0a060}
+/* error */
+#errMsg{color:#9a7a50;text-align:center;padding:32px;display:none}
+#errMsg a{color:#c0a060}
 </style>
 </head>
 <body>
 
 <div id="envelope">
-  <!-- Decorative fold lines -->
+  <!-- fold lines -->
   <svg id="envDeco" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <line id="dl" x1="0" y1="0"   x2="170" y2="115" stroke="rgba(0,0,0,.07)" stroke-width="1.5"/>
+    <line id="dl" x1="0" y1="0" x2="170" y2="115" stroke="rgba(0,0,0,.07)" stroke-width="1.5"/>
     <line id="dr" x1="340" y1="0" x2="170" y2="115" stroke="rgba(0,0,0,.07)" stroke-width="1.5"/>
-    <line id="db" x1="0" y1="230" x2="170" y2="115" stroke="rgba(0,0,0,.05)" stroke-width="1.5"/>
+    <line id="db" x1="170" y1="230" x2="170" y2="115" stroke="rgba(0,0,0,.05)" stroke-width="1.5"/>
   </svg>
 
-  <!-- Flap -->
-  <div id="flapWrap">
+  <!-- flap -->
+  <div id="flap">
     <svg id="flapSvg" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <polygon id="flapPoly" points="0,0 100,0 50,100" fill="#d4b87a"/>
     </svg>
   </div>
 
   <img id="stamp" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA4MCAxMDAnPjxyZWN0IHdpZHRoPSc4MCcgaGVpZ2h0PScxMDAnIGZpbGw9JyMzZDFhNzgnIHJ4PScyJy8+PHJlY3QgeD0nNCcgeT0nNCcgd2lkdGg9JzcyJyBoZWlnaHQ9JzkyJyBmaWxsPSdub25lJyBzdHJva2U9JyM5YjdmZDQnIHN0cm9rZS13aWR0aD0nMS41JyBzdHJva2UtZGFzaGFycmF5PSc0LDInIHJ4PScxJy8+PGVsbGlwc2UgY3g9JzQwJyBjeT0nNDInIHJ4PScyMicgcnk9JzI2JyBmaWxsPScjNmI0YWIwJy8+PGVsbGlwc2UgY3g9JzM4JyBjeT0nNDAnIHJ4PScxOCcgcnk9JzIyJyBmaWxsPScjOGE2YmNjJy8+PHRleHQgeD0nMTAnIHk9JzkyJyBmb250LWZhbWlseT0nc2VyaWYnIGZvbnQtc2l6ZT0nMTInIGZpbGw9J3doaXRlJyBmb250LXN0eWxlPSdpdGFsaWMnPkk8L3RleHQ+PHRleHQgeD0nMjAnIHk9Jzg4JyBmb250LWZhbWlseT0nc2VyaWYnIGZvbnQtc2l6ZT0nOScgZmlsbD0nd2hpdGUnPlNUPC90ZXh0Pjwvc3ZnPg==" alt="stamp">
-  <div id="addressBlock"></div>
-  <span id="envHint">Click to open &#9993;</span>
+  <div id="addr"></div>
+  <span id="hint">Tap to open &#9993;</span>
 </div>
 
-<!-- Card Book -->
+<!-- card book -->
 <div id="cardBook">
   <div id="bookWrap">
     <div class="page" id="frontPage">
@@ -259,142 +289,156 @@ body{
     </div>
     <div class="page page-r" id="insideLeftPage">
       <img id="insideImg" src="" alt="" style="display:none">
-      <div class="placeholder">&#128155;</div>
+      <div class="heart">&#128155;</div>
     </div>
     <div class="page page-r" id="insideRightPage">
       <div class="msg" id="msgText"></div>
     </div>
     <div class="page page-r" id="backPage">
       <div class="back-inner">
-        <div class="back-note" id="backNoteText"></div>
+        <div class="back-note" id="backNote"></div>
       </div>
     </div>
   </div>
-  <button class="nav-btn" id="prevBtn" onclick="turnPage(-1)">&#8592;</button>
-  <button class="nav-btn" id="nextBtn" onclick="turnPage(1)">&#8594;</button>
+
+  <button class="nav-btn" id="prevBtn" onclick="turn(-1)">&#8592;</button>
+  <button class="nav-btn" id="nextBtn" onclick="turn(1)">&#8594;</button>
   <button id="closeBtn" onclick="closeCard()">&#10005;</button>
-  <div id="pageIndicator"></div>
+  <div id="pageInd"></div>
 </div>
 
-<div id="errorMsg">No card data found. <a href="index.html">Create a card here</a>.</div>
+<div id="errMsg">No card data found. <a href="index.html">Create one here</a>.</div>
 
 <script>
-// ── params ──────────────────────────────────────────────────────────────
-var P       = new URLSearchParams(window.location.search);
-var pName   = P.get('name')     || '';
-var pAddr   = P.get('address')  || '';
-var pMsg    = P.get('message')  || '';
-var pImg    = P.get('img')      || '';
-var pShape  = P.get('shape')    || 'landscape';
-var pColour = P.get('colour')   || '#f5e1b3';
-var pFont   = P.get('font')     || 'Special Elite';
-var pInside = P.get('insideImg')|| '';
-var pBack   = P.get('back')     || '';
+// ── read params ──────────────────────────────────────────────────────────
+var Q   = new URLSearchParams(window.location.search);
+var pN  = Q.get('n')  || '';
+var pA  = Q.get('a')  || '';
+var pM  = Q.get('m')  || '';
+var pI  = Q.get('i')  || '';
+var pSh = Q.get('sh') || 'landscape';
+var pCo = Q.get('co') || '#f5e1b3';
+var pFo = Q.get('fo') || 'Special Elite';
+var pII = Q.get('ii') || '';
+var pBN = Q.get('bn') || '';
 
-if (!pName || !pAddr || !pMsg || !pImg) {
-  document.getElementById('errorMsg').style.display = 'block';
+if (!pN || !pA || !pM || !pI) {
+  document.getElementById('errMsg').style.display = 'block';
   document.getElementById('envelope').style.display = 'none';
 } else {
   setup();
 }
 
-// ── helpers ─────────────────────────────────────────────────────────────
+// ── helpers ──────────────────────────────────────────────────────────────
 function darken(hex, n) {
-  if (hex.length === 4)
-    hex = '#'+hex[1]+hex[1]+hex[2]+hex[2]+hex[3]+hex[3];
+  if (!hex || hex.length < 4) return '#c0a060';
+  if (hex.length === 4) hex='#'+hex[1]+hex[1]+hex[2]+hex[2]+hex[3]+hex[3];
   var r=Math.max(0,parseInt(hex.slice(1,3),16)-n);
   var g=Math.max(0,parseInt(hex.slice(3,5),16)-n);
   var b=Math.max(0,parseInt(hex.slice(5,7),16)-n);
   return '#'+[r,g,b].map(function(x){return x.toString(16).padStart(2,'0')}).join('');
 }
 function lum(hex) {
-  if (hex.length === 4)
-    hex = '#'+hex[1]+hex[1]+hex[2]+hex[2]+hex[3]+hex[3];
+  if (!hex || hex.length < 4) return 0.5;
+  if (hex.length === 4) hex='#'+hex[1]+hex[1]+hex[2]+hex[2]+hex[3]+hex[3];
   return 0.299*parseInt(hex.slice(1,3),16)/255
        + 0.587*parseInt(hex.slice(3,5),16)/255
        + 0.114*parseInt(hex.slice(5,7),16)/255;
 }
-function showFlex(id){ document.getElementById(id).style.display='flex'; }
-function showBlock(id){ document.getElementById(id).style.display='block'; }
-function hideEl(id){ document.getElementById(id).style.display='none'; }
+function px(el, prop, val) { document.getElementById(el).style[prop] = val; }
+function showFlex(el) { document.getElementById(el).style.display='flex'; }
+function showBlock(el){ document.getElementById(el).style.display='block'; }
+function hideEl(el)   { document.getElementById(el).style.display='none'; }
 
 // ── setup ────────────────────────────────────────────────────────────────
 function setup() {
-  var dims = { landscape:{w:340,h:230}, square:{w:280,h:280}, portrait:{w:230,h:340} };
-  var d = dims[pShape] || dims.landscape;
+  var DIMS = {landscape:{w:340,h:230}, square:{w:280,h:280}, portrait:{w:230,h:340}};
+  var d = DIMS[pSh] || DIMS.landscape;
   var W = d.w, H = d.h;
 
-  // Envelope size + colour
+  // ── Responsive envelope size: never bigger than 88vw or 70vh ──
+  var vw = window.innerWidth, vh = window.innerHeight;
+  var maxW = Math.min(vw * 0.88, 400);
+  var maxH = Math.min(vh * 0.50, 360);
+  var scale = Math.min(maxW/W, maxH/H, 1);
+  var EW = Math.round(W * scale);
+  var EH = Math.round(H * scale);
+
   var env = document.getElementById('envelope');
-  env.style.width   = W+'px';
-  env.style.height  = H+'px';
-  env.style.background  = pColour;
-  env.style.borderColor = darken(pColour,18);
+  env.style.width  = EW+'px';
+  env.style.height = EH+'px';
+  env.style.background  = pCo;
+  env.style.borderColor = darken(pCo, 18);
 
-  // Deco SVG
-  document.getElementById('envDeco').setAttribute('viewBox','0 0 '+W+' '+H);
-  document.getElementById('dl').setAttribute('x2', W/2);
-  document.getElementById('dl').setAttribute('y2', H/2);
-  document.getElementById('dr').setAttribute('x1', W);
-  document.getElementById('dr').setAttribute('x2', W/2);
-  document.getElementById('dr').setAttribute('y2', H/2);
-  document.getElementById('db').setAttribute('y1', H);
-  document.getElementById('db').setAttribute('x2', W/2);
-  document.getElementById('db').setAttribute('y2', H/2);
+  // fold lines
+  var deco = document.getElementById('envDeco');
+  deco.setAttribute('viewBox','0 0 '+EW+' '+EH);
+  deco.style.width = EW+'px';
+  deco.style.height = EH+'px';
+  document.getElementById('dl').setAttribute('x2', EW/2);
+  document.getElementById('dl').setAttribute('y2', EH/2);
+  document.getElementById('dr').setAttribute('x1', EW);
+  document.getElementById('dr').setAttribute('x2', EW/2);
+  document.getElementById('dr').setAttribute('y2', EH/2);
+  document.getElementById('db').setAttribute('x1', EW/2);
+  document.getElementById('db').setAttribute('y1', EH);
+  document.getElementById('db').setAttribute('x2', EW/2);
 
-  // Flap colour
-  document.getElementById('flapPoly').setAttribute('fill', darken(pColour,22));
+  // flap colour
+  document.getElementById('flapPoly').setAttribute('fill', darken(pCo, 22));
 
-  // Address colour
-  document.getElementById('addressBlock').style.color =
-    lum(pColour) < 0.42 ? 'rgba(255,255,255,.88)' : '#333';
+  // address colour
+  document.getElementById('addr').style.color =
+    lum(pCo) < 0.42 ? 'rgba(255,255,255,.88)' : '#333';
 
-  // Address lines
-  var ab = document.getElementById('addressBlock');
-  [pName].concat(pAddr.split('\n')).forEach(function(line){
+  // address lines
+  var ab = document.getElementById('addr');
+  [pN].concat(pA.split('\n')).forEach(function(line){
     var p = document.createElement('p');
     p.textContent = line;
     ab.appendChild(p);
   });
 
-  // Page sizing
-  var maxH = Math.min(window.innerHeight * 0.84, 500);
-  var pw = Math.round(maxH * W / H);
+  // ── Page sizing: each page is same aspect ratio as envelope, fits in half of viewport ──
+  var bookMaxW = Math.min(vw * 0.92, 900);
+  var bookMaxH = Math.min(vh * 0.88, 600);
+  // Two pages side by side → each page gets half bookMaxW
+  var pw = Math.floor(Math.min(bookMaxW / 2, bookMaxH * W / H));
+  var ph = Math.floor(pw * H / W);
+  if (ph > bookMaxH) { ph = bookMaxH; pw = Math.floor(ph * W / H); }
+
   document.querySelectorAll('.page').forEach(function(p){
     p.style.width  = pw+'px';
-    p.style.height = maxH+'px';
-    p.style.display = 'none'; // hide until book opens
+    p.style.height = ph+'px';
   });
 
-  // Card content
-  document.getElementById('frontImg').src = pImg;
+  // card content
+  document.getElementById('frontImg').src = pI;
   var mt = document.getElementById('msgText');
-  mt.textContent = pMsg;
-  mt.style.fontFamily = "'"+pFont+"', cursive";
+  mt.textContent = pM;
+  mt.style.fontFamily = "'"+pFo+"', cursive";
+  mt.style.maxHeight  = (ph - 40)+'px';
 
-  if (pInside) {
+  if (pII) {
     var ii = document.getElementById('insideImg');
-    ii.src = pInside;
+    ii.src = pII;
     ii.style.display = 'block';
-    // hide heart placeholder
-    var ph = document.querySelector('#insideLeftPage .placeholder');
-    if (ph) ph.style.display = 'none';
+    var heart = document.querySelector('#insideLeftPage .heart');
+    if (heart) heart.style.display = 'none';
   }
 
-  document.getElementById('backNoteText').textContent = pBack || 'Made with ♥';
+  document.getElementById('backNote').textContent = pBN || 'Made with ♥';
 }
 
-// ── envelope clicks ──────────────────────────────────────────────────────
-var step = 0; // 0=closed 1=flap open 2=card open
+// ── envelope interaction ─────────────────────────────────────────────────
+var step = 0;
 
-document.getElementById('envelope').addEventListener('click', function(e) {
+document.getElementById('envelope').addEventListener('click', function() {
   if (step === 0) {
-    // open flap
-    document.getElementById('flapWrap').classList.add('open');
-    document.getElementById('envHint').textContent = 'Click to open card &#127873;';
+    document.getElementById('flap').classList.add('open');
+    document.getElementById('hint').textContent = 'Tap again to open card';
     step = 1;
   } else if (step === 1) {
-    // open card
     step = 2;
     openCard();
   }
@@ -412,22 +456,32 @@ function openCard() {
   showFlex('prevBtn');
   showFlex('nextBtn');
   showFlex('closeBtn');
-  showBlock('pageIndicator');
+  showBlock('pageInd');
   showSpread(0);
 }
 
 function showSpread(i) {
   cur = i;
   document.querySelectorAll('.page').forEach(function(p){ p.style.display='none'; });
+  // show the two pages for this spread
   showBlock(spreads[i][0]);
-  showBlock(spreads[i][1]);
+  // inside-left needs flex for centering
+  if (spreads[i][1] === 'insideLeftPage' || spreads[i][0] === 'insideLeftPage') {
+    document.getElementById('insideLeftPage').style.display = 'flex';
+  }
+  if (spreads[i][1] === 'insideRightPage' || spreads[i][0] === 'insideRightPage') {
+    document.getElementById('insideRightPage').style.display = 'flex';
+  }
+  // for pages that don't need flex
+  if (spreads[i][1] !== 'insideLeftPage' && spreads[i][1] !== 'insideRightPage') {
+    showBlock(spreads[i][1]);
+  }
   document.getElementById('prevBtn').style.visibility = i===0 ? 'hidden' : 'visible';
   document.getElementById('nextBtn').style.visibility = i===spreads.length-1 ? 'hidden' : 'visible';
-  document.getElementById('pageIndicator').textContent =
-    ['Front & Inside Left','Inside Right & Back'][i];
+  document.getElementById('pageInd').textContent = ['Front & Inside','Message & Back'][i];
 }
 
-function turnPage(dir) {
+function turn(dir) {
   var n = cur + dir;
   if (n >= 0 && n < spreads.length) showSpread(n);
 }
@@ -437,15 +491,14 @@ function closeCard() {
   hideEl('prevBtn');
   hideEl('nextBtn');
   hideEl('closeBtn');
-  hideEl('pageIndicator');
-  document.querySelectorAll('.page').forEach(function(p){ p.style.display='none'; });
+  hideEl('pageInd');
   step = 1;
 }
 
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function(e){
   if (document.getElementById('cardBook').style.display === 'none') return;
-  if (e.key==='ArrowRight') turnPage(1);
-  if (e.key==='ArrowLeft')  turnPage(-1);
+  if (e.key==='ArrowRight') turn(1);
+  if (e.key==='ArrowLeft')  turn(-1);
   if (e.key==='Escape')     closeCard();
 });
 </script>

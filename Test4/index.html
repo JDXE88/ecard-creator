@@ -7,199 +7,202 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Dancing+Script&family=Playfair+Display&family=Courier+Prime&family=Pacifico&family=Lato&display=swap">
 <style>
 *{box-sizing:border-box}
-body{font-family:'Special Elite',cursive;background:#fdf6ec;display:flex;justify-content:center;min-height:100vh;margin:0;padding:40px 20px}
-.card{background:#fff;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.12);padding:36px 40px;width:100%;max-width:560px}
-h1{font-size:26px;color:#5a3e1b;margin:0 0 4px;text-align:center}
-.subtitle{text-align:center;color:#9a7a50;font-size:14px;margin-bottom:24px}
-label{display:block;font-size:13px;color:#7a5c30;margin-bottom:6px;margin-top:16px}
-input[type=text],textarea,input[type=url],select{width:100%;padding:10px 14px;border:2px solid #e0c597;border-radius:8px;font-family:'Special Elite',cursive;font-size:14px;color:#333;background:#fffdf7;outline:none;transition:border-color .2s;resize:vertical}
-input[type=text]:focus,textarea:focus,input[type=url]:focus,select:focus{border-color:#c0a060}
-.row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+body{font-family:'Special Elite',cursive;background:#fdf6ec;margin:0;padding:20px;display:flex;justify-content:center}
+.wrap{background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.1);padding:28px 24px;width:100%;max-width:500px}
+h1{font-size:22px;color:#5a3e1b;margin:0 0 4px;text-align:center}
+.sub{text-align:center;color:#9a7a50;font-size:13px;margin-bottom:20px}
+label{display:block;font-size:12px;color:#7a5c30;margin:14px 0 5px}
+input[type=text],textarea,input[type=url],select{width:100%;padding:9px 12px;border:2px solid #e0c597;border-radius:8px;font-family:'Special Elite',cursive;font-size:14px;color:#333;background:#fffdf7;outline:none;resize:vertical}
+input:focus,textarea:focus{border-color:#c0a060}
+hr{border:none;border-top:1px solid #f0dfc0;margin:18px 0}
 
-/* Envelope shape picker */
-.shape-option{cursor:pointer;border:2px solid #e0c597;border-radius:8px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:#7a5c30;transition:.2s;background:#fffdf7}
-.shape-option:hover,.shape-option.active{border-color:#c0a060;background:#fdf3e0}
-.shape-preview{background:#e0c597;border-radius:2px}
+/* shape picker */
+.shape-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.shape-opt{border:2px solid #e0c597;border-radius:8px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;color:#7a5c30;cursor:pointer;background:#fffdf7;transition:.2s}
+.shape-opt:hover,.shape-opt.on{border-color:#c0a060;background:#fdf3e0}
+.shape-box{background:#e0c597;border-radius:2px}
 
-/* Colour picker */
-.colour-swatches{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
-.swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s}
-.swatch.active{border-color:#5a3e1b;transform:scale(1.15)}
-#customColour{width:32px;height:32px;border-radius:50%;border:3px solid #e0c597;cursor:pointer;padding:0;background:none}
+/* colour */
+.colour-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;align-items:center}
+.swatch{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s;flex-shrink:0}
+.swatch.on{border-color:#5a3e1b;transform:scale(1.15)}
+#customCol{width:30px;height:30px;border-radius:50%;border:3px solid #e0c597;cursor:pointer;padding:0;background:none;-webkit-appearance:none}
 
-/* Font picker */
-.font-option{cursor:pointer;border:2px solid #e0c597;border-radius:8px;padding:8px 10px;font-size:15px;color:#333;background:#fffdf7;transition:.2s;text-align:center}
-.font-option:hover,.font-option.active{border-color:#c0a060;background:#fdf3e0}
+/* font picker */
+.font-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.font-opt{border:2px solid #e0c597;border-radius:8px;padding:8px 6px;font-size:14px;color:#333;background:#fffdf7;text-align:center;cursor:pointer;transition:.2s}
+.font-opt:hover,.font-opt.on{border-color:#c0a060;background:#fdf3e0}
 
-/* Upload */
-.upload-area{border:2px dashed #e0c597;border-radius:8px;padding:16px;text-align:center;cursor:pointer;background:#fffdf7;position:relative;transition:.2s}
-.upload-area:hover{border-color:#c0a060;background:#fdf3e0}
-.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-label{font-size:13px;color:#9a7a50;pointer-events:none}
-#preview{margin-top:10px;max-width:100%;max-height:160px;border-radius:8px;display:none;border:2px solid #e0c597}
+/* upload */
+.upload{border:2px dashed #e0c597;border-radius:8px;padding:16px;text-align:center;cursor:pointer;background:#fffdf7;position:relative;transition:.2s}
+.upload:hover{border-color:#c0a060;background:#fdf3e0}
+.upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-lbl{font-size:13px;color:#9a7a50;pointer-events:none}
+.preview{margin-top:8px;max-width:100%;max-height:150px;border-radius:6px;display:none;border:2px solid #e0c597}
+.url-tog{font-size:11px;color:#9a7a50;cursor:pointer;text-decoration:underline;margin-top:5px;display:inline-block}
+.url-box{display:none;margin-top:6px}
 
-.url-toggle{font-size:12px;color:#9a7a50;cursor:pointer;text-decoration:underline;margin-top:6px;display:inline-block}
-#urlInput{display:none;margin-top:8px}
+/* char count */
+.cc{font-size:11px;color:#b08050;text-align:right;margin-top:3px}
 
-.btn{width:100%;margin-top:26px;padding:14px;background:#e0c597;color:#5a3e1b;border:none;border-radius:8px;font-family:'Special Elite',cursive;font-size:16px;cursor:pointer;transition:.2s}
+/* btn */
+.btn{width:100%;margin-top:22px;padding:14px;background:#e0c597;color:#5a3e1b;border:none;border-radius:8px;font-family:'Special Elite',cursive;font-size:16px;cursor:pointer;transition:.2s}
 .btn:hover{background:#c0a060}
-.result-box{display:none;margin-top:20px;background:#fdf3e0;border:2px solid #e0c597;border-radius:8px;padding:16px}
-.result-box p{font-size:13px;color:#7a5c30;margin:0 0 10px}
-.link-row{display:flex;gap:8px}
-.link-row input{flex:1;padding:8px 12px;border:2px solid #e0c597;border-radius:6px;font-size:12px;font-family:monospace;color:#333;background:#fff}
-.copy-btn{padding:8px 16px;background:#e0c597;border:none;border-radius:6px;font-family:'Special Elite',cursive;cursor:pointer;font-size:13px;color:#5a3e1b;transition:.2s;white-space:nowrap}
+
+/* result */
+.result{display:none;margin-top:18px;background:#fdf3e0;border:2px solid #e0c597;border-radius:8px;padding:14px}
+.result p{font-size:12px;color:#7a5c30;margin:0 0 8px}
+.link-row{display:flex;gap:6px}
+.link-row input{flex:1;padding:8px 10px;border:2px solid #e0c597;border-radius:6px;font-size:11px;font-family:monospace;color:#333;background:#fff;min-width:0}
+.copy-btn{padding:8px 14px;background:#e0c597;border:none;border-radius:6px;font-family:'Special Elite',cursive;cursor:pointer;font-size:12px;color:#5a3e1b;white-space:nowrap;transition:.2s}
 .copy-btn:hover{background:#c0a060}
-.note{font-size:11px;color:#b08050;margin-top:8px}
-.char-count{font-size:11px;color:#b08050;text-align:right;margin-top:3px}
-.section-divider{border:none;border-top:1px solid #f0dfc0;margin:20px 0}
+.note{font-size:10px;color:#b08050;margin-top:6px}
 </style>
 </head>
 <body>
-<div class="card">
+<div class="wrap">
   <h1>✉️ Send an E-Card</h1>
-  <p class="subtitle">Customise your envelope and card, then share the link.</p>
+  <p class="sub">Customise your envelope and card, then share the link.</p>
 
-  <!-- Recipient -->
   <label>Recipient Name</label>
-  <input type="text" id="recipientName" placeholder="e.g. Jane Doe" maxlength="60">
+  <input type="text" id="rName" placeholder="e.g. Jane Doe" maxlength="60">
+
   <label>Recipient Address</label>
-  <textarea id="address" rows="3" placeholder="123 High Street&#10;London, SW1A 1AA&#10;United Kingdom" maxlength="300"></textarea>
+  <textarea id="rAddr" rows="3" placeholder="123 High Street&#10;London, SW1A 1AA&#10;United Kingdom" maxlength="300"></textarea>
 
-  <hr class="section-divider">
+  <hr>
 
-  <!-- Envelope shape -->
   <label>Envelope Shape</label>
-  <div class="row-3" id="shapeRow">
-    <div class="shape-option active" data-shape="landscape" onclick="pickShape(this)">
-      <div class="shape-preview" style="width:60px;height:42px"></div>
+  <div class="shape-row">
+    <div class="shape-opt on" data-shape="landscape" onclick="pickShape(this)">
+      <div class="shape-box" style="width:58px;height:40px"></div>
       Landscape
     </div>
-    <div class="shape-option" data-shape="square" onclick="pickShape(this)">
-      <div class="shape-preview" style="width:50px;height:50px"></div>
+    <div class="shape-opt" data-shape="square" onclick="pickShape(this)">
+      <div class="shape-box" style="width:48px;height:48px"></div>
       Square
     </div>
-    <div class="shape-option" data-shape="portrait" onclick="pickShape(this)">
-      <div class="shape-preview" style="width:42px;height:60px"></div>
+    <div class="shape-opt" data-shape="portrait" onclick="pickShape(this)">
+      <div class="shape-box" style="width:40px;height:58px"></div>
       Portrait
     </div>
   </div>
 
-  <!-- Envelope colour -->
   <label>Envelope Colour</label>
-  <div class="colour-swatches" id="swatches">
-    <div class="swatch active" data-colour="#f5e1b3" style="background:#f5e1b3" onclick="pickColour(this)" title="Classic Cream"></div>
-    <div class="swatch" data-colour="#ffd6d6" style="background:#ffd6d6" onclick="pickColour(this)" title="Blush Pink"></div>
-    <div class="swatch" data-colour="#d6eaff" style="background:#d6eaff" onclick="pickColour(this)" title="Sky Blue"></div>
-    <div class="swatch" data-colour="#d6f5d6" style="background:#d6f5d6" onclick="pickColour(this)" title="Mint Green"></div>
-    <div class="swatch" data-colour="#e8d6ff" style="background:#e8d6ff" onclick="pickColour(this)" title="Lavender"></div>
-    <div class="swatch" data-colour="#fff3b0" style="background:#fff3b0" onclick="pickColour(this)" title="Buttercup"></div>
-    <div class="swatch" data-colour="#2c2c2c" style="background:#2c2c2c" onclick="pickColour(this)" title="Midnight"></div>
-    <input type="color" id="customColour" value="#f5e1b3" title="Custom colour" onchange="pickCustomColour(this)">
+  <div class="colour-row">
+    <div class="swatch on" data-c="#f5e1b3" style="background:#f5e1b3" onclick="pickSwatch(this)" title="Cream"></div>
+    <div class="swatch" data-c="#ffd6d6" style="background:#ffd6d6" onclick="pickSwatch(this)" title="Blush"></div>
+    <div class="swatch" data-c="#d6eaff" style="background:#d6eaff" onclick="pickSwatch(this)" title="Sky Blue"></div>
+    <div class="swatch" data-c="#d6f5d6" style="background:#d6f5d6" onclick="pickSwatch(this)" title="Mint"></div>
+    <div class="swatch" data-c="#e8d6ff" style="background:#e8d6ff" onclick="pickSwatch(this)" title="Lavender"></div>
+    <div class="swatch" data-c="#fff3b0" style="background:#fff3b0" onclick="pickSwatch(this)" title="Buttercup"></div>
+    <div class="swatch" data-c="#2c2c2c" style="background:#2c2c2c" onclick="pickSwatch(this)" title="Midnight"></div>
+    <input type="color" id="customCol" value="#f5e1b3" title="Custom" onchange="pickCustom(this)">
   </div>
 
-  <hr class="section-divider">
+  <hr>
 
-  <!-- Card pages -->
   <label>Card Image (Front Cover)</label>
-  <div class="upload-area">
-    <input type="file" accept="image/*" id="fileInput" onchange="handleFile(event)">
-    <div class="upload-label">📎 Click or drag an image here</div>
+  <div class="upload">
+    <input type="file" accept="image/*" id="frontFile" onchange="handleFront(event)">
+    <div class="upload-lbl">&#128206; Click or drag an image here</div>
   </div>
-  <img id="preview" alt="Preview">
-  <span class="url-toggle" onclick="toggleUrl()">Or use an image URL instead ↓</span>
-  <div id="urlInput">
-    <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg" oninput="previewUrl()">
+  <img id="frontPreview" class="preview" alt="preview">
+  <span class="url-tog" onclick="toggleUrl(this,'urlBox1')">Or use an image URL instead ↓</span>
+  <div id="urlBox1" class="url-box">
+    <input type="url" id="frontUrl" placeholder="https://example.com/image.jpg" oninput="previewUrl()">
   </div>
 
-  <label>Inside Left — Printed Image (optional)</label>
-  <div class="upload-area">
-    <input type="file" accept="image/*" id="insideImgInput" onchange="handleInsideImg(event)">
-    <div class="upload-label">📎 Upload an inside illustration (optional)</div>
+  <label>Inside Left — Image (optional)</label>
+  <div class="upload">
+    <input type="file" accept="image/*" id="insideFile" onchange="handleInside(event)">
+    <div class="upload-lbl">&#128206; Upload inside illustration (optional)</div>
   </div>
-  <img id="insideImgPreview" alt="Inside Preview" style="margin-top:8px;max-width:100%;max-height:120px;border-radius:8px;display:none;border:2px solid #e0c597">
+  <img id="insidePreview" class="preview" alt="inside preview">
 
   <label>Message (Inside Right)</label>
-  <textarea id="message" rows="5" placeholder="Write your message here…" maxlength="600" oninput="updateCount()"></textarea>
-  <div class="char-count"><span id="charCount">0</span> / 600</div>
+  <textarea id="msg" rows="5" placeholder="Write your message here..." maxlength="600" oninput="updateCC()"></textarea>
+  <div class="cc"><span id="cc">0</span>/600</div>
 
-  <!-- Font picker -->
   <label>Message Font</label>
-  <div class="row-3" id="fontRow" style="gap:8px">
-    <div class="font-option active" data-font="Special Elite" style="font-family:'Special Elite'" onclick="pickFont(this)">Special Elite</div>
-    <div class="font-option" data-font="Dancing Script" style="font-family:'Dancing Script'" onclick="pickFont(this)">Dancing Script</div>
-    <div class="font-option" data-font="Playfair Display" style="font-family:'Playfair Display'" onclick="pickFont(this)">Playfair Display</div>
-    <div class="font-option" data-font="Courier Prime" style="font-family:'Courier Prime'" onclick="pickFont(this)">Courier Prime</div>
-    <div class="font-option" data-font="Pacifico" style="font-family:'Pacifico'" onclick="pickFont(this)">Pacifico</div>
-    <div class="font-option" data-font="Lato" style="font-family:'Lato'" onclick="pickFont(this)">Lato</div>
+  <div class="font-row">
+    <div class="font-opt on" data-font="Special Elite" style="font-family:'Special Elite'" onclick="pickFont(this)">Special Elite</div>
+    <div class="font-opt" data-font="Dancing Script" style="font-family:'Dancing Script'" onclick="pickFont(this)">Dancing Script</div>
+    <div class="font-opt" data-font="Playfair Display" style="font-family:'Playfair Display'" onclick="pickFont(this)">Playfair Display</div>
+    <div class="font-opt" data-font="Courier Prime" style="font-family:'Courier Prime'" onclick="pickFont(this)">Courier Prime</div>
+    <div class="font-opt" data-font="Pacifico" style="font-family:'Pacifico'" onclick="pickFont(this)">Pacifico</div>
+    <div class="font-opt" data-font="Lato" style="font-family:'Lato'" onclick="pickFont(this)">Lato</div>
   </div>
 
   <label>Back of Card — Note (optional)</label>
-  <textarea id="backNote" rows="2" placeholder="e.g. Printed & posted with love 💛" maxlength="200"></textarea>
+  <textarea id="backNote" rows="2" placeholder="e.g. Sent with love &#128149;" maxlength="200"></textarea>
 
-  <button class="btn" onclick="generateLink()">Generate Shareable Link →</button>
+  <button class="btn" onclick="generate()">Generate Shareable Link &rarr;</button>
 
-  <div class="result-box" id="resultBox">
-    <p>🎉 Your link is ready! Share it with your recipient:</p>
+  <div class="result" id="result">
+    <p>&#127881; Your link is ready — share it with your recipient:</p>
     <div class="link-row">
-      <input type="text" id="generatedLink" readonly>
+      <input type="text" id="genLink" readonly>
       <button class="copy-btn" onclick="copyLink()">Copy</button>
     </div>
-    <p class="note" id="sizeNote"></p>
+    <p class="note" id="resultNote"></p>
   </div>
 </div>
 
 <script>
-let base64Image = null;
-let insideBase64 = null;
-let selectedShape = 'landscape';
-let selectedColour = '#f5e1b3';
-let selectedFont = 'Special Elite';
+var b64Front=null, b64Inside=null;
+var selShape='landscape', selColour='#f5e1b3', selFont='Special Elite';
 
-function updateCount(){document.getElementById('charCount').textContent=document.getElementById('message').value.length}
-function toggleUrl(){const e=document.getElementById('urlInput');e.style.display=e.style.display==='none'?'block':'none'}
-function pickShape(el){document.querySelectorAll('.shape-option').forEach(e=>e.classList.remove('active'));el.classList.add('active');selectedShape=el.dataset.shape}
-function pickFont(el){document.querySelectorAll('.font-option').forEach(e=>e.classList.remove('active'));el.classList.add('active');selectedFont=el.dataset.font}
-function pickColour(el){document.querySelectorAll('.swatch').forEach(e=>e.classList.remove('active'));el.classList.add('active');selectedColour=el.dataset.colour}
-function pickCustomColour(el){document.querySelectorAll('.swatch').forEach(e=>e.classList.remove('active'));selectedColour=el.value}
+function updateCC(){document.getElementById('cc').textContent=document.getElementById('msg').value.length}
+function toggleUrl(tog,boxId){var b=document.getElementById(boxId);b.style.display=b.style.display==='none'?'block':'none'}
+function pickShape(el){document.querySelectorAll('.shape-opt').forEach(function(e){e.classList.remove('on')});el.classList.add('on');selShape=el.dataset.shape}
+function pickFont(el){document.querySelectorAll('.font-opt').forEach(function(e){e.classList.remove('on')});el.classList.add('on');selFont=el.dataset.font}
+function pickSwatch(el){document.querySelectorAll('.swatch').forEach(function(e){e.classList.remove('on')});el.classList.add('on');selColour=el.dataset.c}
+function pickCustom(el){document.querySelectorAll('.swatch').forEach(function(e){e.classList.remove('on')});selColour=el.value}
 
-function handleFile(e){
-  const file=e.target.files[0];if(!file)return;
-  const r=new FileReader();
-  r.onload=ev=>{base64Image=ev.target.result;const p=document.getElementById('preview');p.src=base64Image;p.style.display='block'};
+function handleFront(e){
+  var file=e.target.files[0];if(!file)return;
+  var r=new FileReader();
+  r.onload=function(ev){b64Front=ev.target.result;var p=document.getElementById('frontPreview');p.src=b64Front;p.style.display='block'};
   r.readAsDataURL(file);
 }
-function handleInsideImg(e){
-  const file=e.target.files[0];if(!file)return;
-  const r=new FileReader();
-  r.onload=ev=>{insideBase64=ev.target.result;const p=document.getElementById('insideImgPreview');p.src=insideBase64;p.style.display='block'};
+function handleInside(e){
+  var file=e.target.files[0];if(!file)return;
+  var r=new FileReader();
+  r.onload=function(ev){b64Inside=ev.target.result;var p=document.getElementById('insidePreview');p.src=b64Inside;p.style.display='block'};
   r.readAsDataURL(file);
 }
-function previewUrl(){const url=document.getElementById('imageUrl').value;if(url){document.getElementById('preview').src=url;document.getElementById('preview').style.display='block';base64Image=null}}
+function previewUrl(){
+  var url=document.getElementById('frontUrl').value;
+  if(url){document.getElementById('frontPreview').src=url;document.getElementById('frontPreview').style.display='block';b64Front=null}
+}
 
-function generateLink(){
-  const name=document.getElementById('recipientName').value.trim();
-  const address=document.getElementById('address').value.trim();
-  const message=document.getElementById('message').value.trim();
-  const imageUrl=document.getElementById('imageUrl').value.trim();
-  const backNote=document.getElementById('backNote').value.trim();
-  if(!name||!address||!message){alert('Please fill in name, address and message.');return}
-  const imgSrc=base64Image||imageUrl;
+function generate(){
+  var name=document.getElementById('rName').value.trim();
+  var addr=document.getElementById('rAddr').value.trim();
+  var msg=document.getElementById('msg').value.trim();
+  var urlImg=document.getElementById('frontUrl').value.trim();
+  var backNote=document.getElementById('backNote').value.trim();
+  if(!name||!addr||!msg){alert('Please fill in name, address and message.');return}
+  var imgSrc=b64Front||urlImg;
   if(!imgSrc){alert('Please upload a card image or provide an image URL.');return}
-  const p=new URLSearchParams();
-  p.set('name',name);p.set('address',address);p.set('message',message);p.set('img',imgSrc);
-  p.set('shape',selectedShape);p.set('colour',selectedColour);p.set('font',selectedFont);
-  if(insideBase64)p.set('insideImg',insideBase64);
-  if(backNote)p.set('back',backNote);
-  const base=window.location.href.replace(/index\.html.*$/,'').replace(/\?.*$/,'');
-  const link=base+'card.html?'+p.toString();
-  document.getElementById('generatedLink').value=link;
-  document.getElementById('resultBox').style.display='block';
-  document.getElementById('sizeNote').textContent=base64Image?'⚠️ Image embedded in URL — consider hosting it online for a shorter link.':'✅ Using an image URL keeps the link short and reliable.';
+  var p=new URLSearchParams();
+  p.set('n',name);p.set('a',addr);p.set('m',msg);p.set('i',imgSrc);
+  p.set('sh',selShape);p.set('co',selColour);p.set('fo',selFont);
+  if(b64Inside)p.set('ii',b64Inside);
+  if(backNote)p.set('bn',backNote);
+  var base=window.location.href.replace(/index\.html.*$/,'').replace(/\?.*$/,'');
+  var link=base+'card.html?'+p.toString();
+  document.getElementById('genLink').value=link;
+  document.getElementById('result').style.display='block';
+  document.getElementById('resultNote').textContent=b64Front
+    ?'Tip: For shorter links, host your image online and use the URL option instead.'
+    :'Great — using a hosted image URL keeps the link short and reliable.';
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function copyLink(){
-  navigator.clipboard.writeText(document.getElementById('generatedLink').value).then(()=>{
-    const b=document.querySelector('.copy-btn');b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',2000);
+  navigator.clipboard.writeText(document.getElementById('genLink').value).then(function(){
+    var b=document.querySelector('.copy-btn');b.textContent='Copied!';setTimeout(function(){b.textContent='Copy'},2000);
   });
 }
 </script>

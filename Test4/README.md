@@ -1,19 +1,22 @@
-# E-Card Sender v3
-
-## Features
-- Envelope shapes: Landscape / Square / Portrait
-- Envelope colour: presets + custom picker
-- Card front image: upload or URL
-- Optional inside-left illustration
-- Message with 6 font choices
-- Back-of-card note
-- 4-page book: Front | Inside Left | Inside Right | Back
-- Two-click envelope: click 1 = open flap, click 2 = open card
-- Keyboard: arrow keys to turn pages, Esc to close
+# E-Card Sender — Final
 
 ## Files
-| index.html | Compose UI for sender |
-| card.html  | Card viewer for recipient |
+- index.html  →  Compose & send (for you)
+- card.html   →  Card viewer (for the recipient)
 
-## Deploy (GitHub Pages)
-Settings > Pages > Source: main branch / root
+## How to use
+1. Deploy both files to GitHub Pages (Settings > Pages > main / root)
+2. Open index.html, fill in the form, click "Generate Shareable Link"
+3. Copy and send the link to your recipient
+
+## Features
+- Envelope shapes: Landscape, Square, Portrait
+- 7 envelope colour presets + custom colour picker
+- Upload card image or use an image URL
+- Optional inside-left illustration
+- 6 message font choices
+- Back-of-card note
+- 4-page card: Front | Inside Left | Inside Right | Back
+- Two-tap envelope: tap 1 = open flap, tap 2 = reveal card
+- Fully mobile responsive
+- Keyboard nav (arrow keys + Escape)

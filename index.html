@@ -5,22 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub Pages Folders</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             text-align: center;
-            padding: 50px;
+            padding: 40px 20px;
+            min-height: 100vh;
         }
 
         h1 {
             color: #333;
             margin-bottom: 40px;
+            font-size: clamp(1.4rem, 5vw, 2rem);
         }
 
         .button-container {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
         .button {
@@ -29,10 +40,12 @@
             padding: 15px 30px;
             text-align: center;
             text-decoration: none;
-            font-size: 18px;
+            font-size: clamp(14px, 3vw, 18px);
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
+            flex: 1 1 120px;
+            max-width: 200px;
         }
 
         .button:hover {
@@ -43,6 +56,30 @@
         .button:active {
             background-color: #3e8e41;
             transform: translateY(1px);
+        }
+
+        /* Tablet */
+        @media (max-width: 768px) {
+            body {
+                padding: 30px 16px;
+            }
+
+            .button {
+                flex: 1 1 calc(50% - 20px);
+                max-width: calc(50% - 10px);
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            body {
+                padding: 24px 12px;
+            }
+
+            .button {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
         }
     </style>
 </head>
